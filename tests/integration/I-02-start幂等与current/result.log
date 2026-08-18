@@ -1,0 +1,30 @@
+# I-02 2026-08-18 11:12:54 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /containers/start #1
+PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}
+
+## step 2 PASS
+cmd: POST /containers/start #2 幂等
+PASS；HTTP 200 ep1=10.213.35.42:31000 ep2=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}
+
+## step 3 PASS
+cmd: GET /containers/current
+PASS；HTTP 200 body={"server_b_endpoint":"10.213.35.42:31000","container_status":"running","container_name":"runner-alice","nfs_mount_path":"/workspace"}
+
+## step 4 PASS
+cmd: GET http://10.213.35.42:31000/health
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 5 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 body={"status":"stopped"}
+
+## step 6 PASS
+cmd: stop 后再 start
+PASS；HTTP 200 endpoint=10.213.35.42:31000 health=200 {"status":"ok"}
+
+## step 7 PASS
+cmd: POST /containers/stop 收尾
+PASS；HTTP 200 body={"status":"stopped"}；docker=无

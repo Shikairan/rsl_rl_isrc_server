@@ -1,0 +1,22 @@
+{
+  "id": "T-E-01",
+  "dir": "/home/isrc5090/149server/tests/torchrun与CUDA/旧镜像CPU_torchrun调度冒烟",
+  "time": "2026-08-18 10:32:22 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "sg docker -c 'docker run --rm --name runner-alice-old --gpus 1 --cpus 4 --memory 8g -v /mnt/nfs/alice:/workspace local/torchrun:0.01 torchrun --nproc_per_node=1 --standalone /workspace/jobs/train.py --epochs 3'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：========== == CUDA == ========== CUDA Version 12.2.0 Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved. This container image and its contents are governed by the NVIDIA Deep Learning Container License. By pulling and using the container, you accept the terms and conditions of this license: https://developer.nvidia…"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "cat /mnt/nfs/alice/jobs/last_run.txt",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：finished_at=2026-08-18T02:32:21.959445+00:00 device=cpu torch=2.4.1+cu121 loss=1.2146183252334595"
+    }
+  ]
+}

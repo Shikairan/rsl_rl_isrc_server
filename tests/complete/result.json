@@ -1,0 +1,253 @@
+{
+  "id": "C-FULL",
+  "dir": "/home/isrc5090/149server/tests/complete",
+  "time": "2026-08-18 16:43:08 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "GET $A/health",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"ok\"}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "POST /login 错密码",
+      "returncode": 401,
+      "result": "PASS；HTTP 401 body={\"detail\":{\"error\":\"invalid credentials\"}}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "POST /login alice",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 nfs_host=10.250.30.115 export=/mnt/dockerContainer/nfs/alice token_len=147"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "POST /containers/start 无 token",
+      "returncode": 401,
+      "result": "PASS；HTTP 401 body={\"detail\":{\"error\":\"missing token\"}}"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "showmount -e 10.250.30.115",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8"
+    },
+    {
+      "step": 6,
+      "ok": true,
+      "cmd": "findmnt /mnt/nfs/alice",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：TARGET SOURCE FSTYPE OPTIONS /mnt/nfs/alice 10.250.30.115:/mnt/dockerContainer/nfs/alice nfs4 rw,relatime,vers=4.2,rsize=1048576,wsize=1048576,namlen=255,hard,fatal_neterrors=none,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=10.213.35.42,local_lock=none,addr=10.250.30.115"
+    },
+    {
+      "step": 7,
+      "ok": true,
+      "cmd": "(已挂载，跳过 mount)",
+      "returncode": 0,
+      "result": "PASS；已挂载，未重复执行 mount"
+    },
+    {
+      "step": 8,
+      "ok": true,
+      "cmd": "ls /mnt/nfs/alice/jobs/train.py",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：/mnt/nfs/alice/jobs/train.py"
+    },
+    {
+      "step": 9,
+      "ok": true,
+      "cmd": "sudo -S -p '' bash -lc 'echo ping | tee /mnt/nfs/alice/jobs/complete_probe.txt'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；本机 cat='ping'；输出：ping"
+    },
+    {
+      "step": 10,
+      "ok": true,
+      "cmd": "/home/isrc5090/miniconda3/bin/sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR kairan@10.250.30.115 'cat /mnt/dockerContainer/nfs/alice/jobs/complete_probe.txt'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：ping"
+    },
+    {
+      "step": 11,
+      "ok": true,
+      "cmd": "sg docker -c 'docker image inspect rsl_rl_isrc:v3-C --format '\"'\"'{{.Id}} {{json .Config.Entrypoint}} {{json .Config.ExposedPorts}}'\"'\"''",
+      "returncode": 0,
+      "result": "PASS；退出码 0；须为 v3-C（含 Server B + obsserver）；输出：sha256:7e3e1f8913ef8ab409ba3a4069a07b686d83394b4d1567c722074031bce7fcae [\"/opt/serverB/entrypoint.sh\"] {\"15557/tcp\":{},\"8080/tcp\":{}}"
+    },
+    {
+      "step": 12,
+      "ok": true,
+      "cmd": "nvidia-smi -L",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：GPU 0: NVIDIA GeForce RTX 5090 (UUID: GPU-8f3532a7-6994-9d8d-7ab2-962e3e4fd2cd) GPU 1: NVIDIA GeForce RTX 5090 (UUID: GPU-54dacabd-569b-f97a-b07c-52917620e8fd) GPU 2: NVIDIA GeForce RTX 5090 (UUID: GPU-6f1ae41a-8a1b-cb4d-78e6-ee6cca10242b) GPU 3: NVIDIA GeForce RTX 5090 (UUID: GPU-4469f8e3-945d-5f0c-6e16-b18fd0e6c257) GPU 4: NVIDIA GeForce RTX 5090 (UUID: G…"
+    },
+    {
+      "step": 13,
+      "ok": true,
+      "cmd": "docker ps -a --filter name=runner-alice",
+      "returncode": 0,
+      "result": "PASS；无 runner-alice"
+    },
+    {
+      "step": 14,
+      "ok": true,
+      "cmd": "head -n 5 /mnt/nfs/alice/jobs/train.py",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：#!/usr/bin/env python3 \"\"\"Tiny PyTorch job for NFS + torchrun smoke test. Uses CUDA when the installed wheel supports this GPU; otherwise CPU. local/torchrun:0.01 ships torch 2.4.1 (max sm_90) which cannot run RTX 5090 (sm_120)."
+    },
+    {
+      "step": 15,
+      "ok": true,
+      "cmd": "POST /containers/start rsl_rl_isrc:v3-C gpu_count=2",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 obs_pub=10.213.35.42:32000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+    },
+    {
+      "step": 16,
+      "ok": true,
+      "cmd": "GET /containers/current",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
+    },
+    {
+      "step": 17,
+      "ok": true,
+      "cmd": "POST /containers/start 幂等",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 ep1=10.213.35.42:31000 ep2=10.213.35.42:31000 obs=10.213.35.42:32000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+    },
+    {
+      "step": 18,
+      "ok": true,
+      "cmd": "sg docker -c 'docker ps --filter name=runner-alice --format '\"'\"'{{.Names}} {{.Status}} {{.Ports}}'\"'\"''",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：runner-alice Up 2 seconds 10.213.35.42:31000->8080/tcp, 10.213.35.42:32000->15557/tcp"
+    },
+    {
+      "step": 19,
+      "ok": true,
+      "cmd": "sg docker -c 'docker exec runner-alice ls /workspace/jobs/train.py'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：/workspace/jobs/train.py"
+    },
+    {
+      "step": 20,
+      "ok": true,
+      "cmd": "GET http://10.213.35.42:31000/health",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"ok\"}"
+    },
+    {
+      "step": 21,
+      "ok": true,
+      "cmd": "python3 -c 'import socket;s=socket.create_connection(('\"'\"'10.213.35.42'\"'\"',32000),2);s.close();print('\"'\"'ok'\"'\"')'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：ok"
+    },
+    {
+      "step": 22,
+      "ok": true,
+      "cmd": "POST /tasks/start ../etc/passwd",
+      "returncode": 400,
+      "result": "PASS；HTTP 400 body={\"detail\":{\"error\":\"script_path escapes workspace\"}}"
+    },
+    {
+      "step": 23,
+      "ok": true,
+      "cmd": "POST /tasks/start /etc/passwd",
+      "returncode": 400,
+      "result": "PASS；HTTP 400 body={\"detail\":{\"error\":\"script_path must be relative to workspace\"}}"
+    },
+    {
+      "step": 24,
+      "ok": true,
+      "cmd": "POST /tasks/start jobs/complete_obs_smoke.py（开 ZMQ obs，无 --no-zmq-obs）",
+      "returncode": 202,
+      "result": "PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T08:42:59.647863+00:00'} obs_pub=10.213.35.42:32000"
+    },
+    {
+      "step": 25,
+      "ok": true,
+      "cmd": "GET /tasks/t-1/logs?since=0（running 期间采集）",
+      "returncode": 0,
+      "result": "PASS；W0818 08:43:00.767000 72 torch/distributed/run.py:851] W0818 08:43:00.767000 72 torch/distributed/run.py:851] ***************************************** W0818 08:43:00.767000 72 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variabl…"
+    },
+    {
+      "step": 26,
+      "ok": true,
+      "cmd": "POST /tasks/start 第二次",
+      "returncode": 409,
+      "result": "PASS；HTTP 409 body={\"detail\":{\"error\":\"a task is already running\"}}"
+    },
+    {
+      "step": 27,
+      "ok": true,
+      "cmd": "GET /tasks/t-1/status 轮询",
+      "returncode": 0,
+      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:42:59.647863+00:00', 'finished_at': '2026-08-18T08:43:06.669554+00:00'}"
+    },
+    {
+      "step": 28,
+      "ok": true,
+      "cmd": "SUB 10.213.35.42:32000 收画面帧",
+      "returncode": 0,
+      "result": "PASS；n_frames=24 head=[[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.026255184784531593, 0.08008196949958801, 0.07164422422647476, 0.04263…"
+    },
+    {
+      "step": 29,
+      "ok": true,
+      "cmd": "GET /tasks/t-1/status 终态",
+      "returncode": 0,
+      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:42:59.647863+00:00', 'finished_at': '2026-08-18T08:43:06.669554+00:00'}"
+    },
+    {
+      "step": 30,
+      "ok": true,
+      "cmd": "cat /mnt/nfs/alice/jobs/last_run.txt",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：finished_at=complete-obs-smoke device=cuda:0 torch=2.11.0+cu128 loss=obs"
+    },
+    {
+      "step": 31,
+      "ok": true,
+      "cmd": "/home/isrc5090/miniconda3/bin/sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR kairan@10.250.30.115 'cat /mnt/dockerContainer/nfs/alice/jobs/last_run.txt'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；本机=finished_at=complete-obs-smoke device=cuda:0 torch=2.11.0+cu128 loss=obs；输出：finished_at=complete-obs-smoke device=cuda:0 torch=2.11.0+cu128 loss=obs"
+    },
+    {
+      "step": 32,
+      "ok": true,
+      "cmd": "cat /mnt/nfs/alice/jobs/complete_obs_frames.json",
+      "returncode": 0,
+      "result": "PASS；退出码 0；n_frames=24 obs_pub=10.213.35.42:32000；输出：{ \"obs_pub_endpoint\": \"10.213.35.42:32000\", \"n_frames\": 24, \"frames\": [ [ [ [ 0.8647451400756836, 0.3887401521205902, 0.7984024286270142 ], [ -0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464 ], [ -0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.02105627581477…"
+    },
+    {
+      "step": 33,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    },
+    {
+      "step": 34,
+      "ok": true,
+      "cmd": "GET /containers/current",
+      "returncode": 404,
+      "result": "PASS；HTTP 404 body={\"detail\":{\"error\":\"no container\"}}"
+    },
+    {
+      "step": 35,
+      "ok": true,
+      "cmd": "docker ps -a --filter name=runner-alice",
+      "returncode": 0,
+      "result": "PASS；无 runner-alice"
+    }
+  ]
+}

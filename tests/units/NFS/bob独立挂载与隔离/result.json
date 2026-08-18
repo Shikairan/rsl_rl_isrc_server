@@ -1,0 +1,36 @@
+{
+  "id": "T-NFS-03",
+  "dir": "/home/isrc5090/149server/tests/NFS/bob独立挂载与隔离",
+  "time": "2026-08-18 10:31:48 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "findmnt /mnt/nfs/bob",
+      "returncode": 0,
+      "result": "PASS；退出码 0；SOURCE=10.250.30.115:/mnt/dockerContainer/nfs/bob；输出：TARGET SOURCE FSTYPE OPTIONS /mnt/nfs/bob 10.250.30.115:/mnt/dockerContainer/nfs/bob nfs4 rw,relatime,vers=4.2,rsize=1048576,wsize=1048576,namlen=255,hard,fatal_neterrors=none,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=10.213.35.42,local_lock=none,addr=10.250.30.115"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "sudo -S -p '' bash -lc 'echo bob-only | tee /mnt/nfs/bob/bob_only.txt'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；cat='bob-only'；输出：bob-only"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "bash -lc 'test ! -f /mnt/nfs/alice/bob_only.txt && echo isolated'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：isolated"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "/home/isrc5090/miniconda3/bin/sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR kairan@10.250.30.115 'ls /mnt/dockerContainer/nfs/bob/bob_only.txt; test ! -f /mnt/dockerContainer/nfs/alice/bob_only.txt && echo ok'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：/mnt/dockerContainer/nfs/bob/bob_only.txt ok"
+    }
+  ]
+}

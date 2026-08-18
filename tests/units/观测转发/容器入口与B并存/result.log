@@ -1,0 +1,22 @@
+# T-OBS-03 2026-08-18 15:41:29 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker run -d --name obs-entry --rm -p 127.0.0.1:18080:8080 -p 127.0.0.1:15557:15557 rsl_rl_isrc:v3-C'
+PASS；退出码 0；health_ready=True；输出：c79bdf67ad068a296633d18c9d4ea09cb4fc3046830655c0c92f85be45c7e7dd
+
+## step 2 PASS
+cmd: curl /health
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 3 PASS
+cmd: sg docker -c 'docker logs obs-entry'
+PASS；退出码 0；输出：INFO: 172.17.0.1:46866 - "GET /health HTTP/1.1" 200 OK INFO: 172.17.0.1:46868 - "GET /health HTTP/1.1" 200 OK INFO: 172.17.0.1:46876 - "GET /health HTTP/1.1" 200 OK 2026-08-18 07:41:28,666 INFO obsserver: obsserver http://127.0.0.1:15558/post -> pub tcp://0.0.0.0:15557 INFO: Started server process [1] INFO: Waiting for application startup. INFO: Application…
+
+## step 4 PASS
+cmd: python3 -c 'import socket;s=socket.create_connection(('"'"'127.0.0.1'"'"',15557),2);s.close();print('"'"'ok'"'"')'
+PASS；退出码 0；输出：ok
+
+## step 5 PASS
+cmd: sg docker -c 'docker stop obs-entry'
+PASS；退出码 0；输出：obs-entry

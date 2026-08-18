@@ -1,0 +1,36 @@
+{
+  "id": "T-NFS-02",
+  "dir": "/home/isrc5090/149server/tests/NFS/alice读写回115",
+  "time": "2026-08-18 10:31:47 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "findmnt /mnt/nfs/alice",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：TARGET SOURCE FSTYPE OPTIONS /mnt/nfs/alice 10.250.30.115:/mnt/dockerContainer/nfs/alice nfs4 rw,relatime,vers=4.2,rsize=1048576,wsize=1048576,namlen=255,hard,fatal_neterrors=none,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=10.213.35.42,local_lock=none,addr=10.250.30.115"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "(已挂载，跳过 mount)",
+      "returncode": 0,
+      "result": "PASS；已挂载，未重复执行 mount"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "sudo -S -p '' bash -lc 'mkdir -p /mnt/nfs/alice/jobs && echo nfs-rw-alice | tee /mnt/nfs/alice/jobs/nfs_rw.txt'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；本机 cat='nfs-rw-alice'；输出：nfs-rw-alice"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "/home/isrc5090/miniconda3/bin/sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR kairan@10.250.30.115 'cat /mnt/dockerContainer/nfs/alice/jobs/nfs_rw.txt'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：nfs-rw-alice"
+    }
+  ]
+}

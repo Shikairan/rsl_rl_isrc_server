@@ -1,0 +1,43 @@
+{
+  "id": "I-03",
+  "dir": "/home/isrc5090/149server/tests/integration/I-03-单任务锁",
+  "time": "2026-08-18 11:13:03 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /tasks/start epochs=999",
+      "returncode": 202,
+      "result": "PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T03:12:57.370065+00:00'}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "POST /tasks/start 第二次",
+      "returncode": 409,
+      "result": "PASS；HTTP 409 body={\"detail\":{\"error\":\"a task is already running\"}}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "POST /tasks/t-1/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "POST /tasks/start 短训",
+      "returncode": 202,
+      "result": "PASS；HTTP 202 start={'task_id': 't-2', 'status': 'running', 'started_at': '2026-08-18T03:12:57.928074+00:00'} status={'task_id': 't-2', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T03:12:57.928074+00:00', 'finished_at': '2026-08-18T03:13:02.645442+00:00'}"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    }
+  ]
+}

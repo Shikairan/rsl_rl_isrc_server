@@ -1,0 +1,29 @@
+{
+  "id": "T-B-03",
+  "dir": "/home/isrc5090/149server/tests/ServerB/单任务锁",
+  "time": "2026-08-18 10:33:05 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /tasks/start 长任务",
+      "returncode": 202,
+      "result": "PASS；HTTP 202 body={\"task_id\":\"t-1\",\"status\":\"running\",\"started_at\":\"2026-08-18T02:33:05.430155+00:00\"}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "第二次 POST /tasks/start",
+      "returncode": 409,
+      "result": "PASS；HTTP 409 body={\"detail\":{\"error\":\"a task is already running\"}}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "POST http://127.0.0.1:18080/tasks/t-1/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    }
+  ]
+}

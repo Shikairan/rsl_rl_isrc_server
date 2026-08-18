@@ -1,0 +1,22 @@
+# I-05 2026-08-18 11:13:06 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /tasks/start ../etc/passwd
+PASS；HTTP 400 body={"detail":{"error":"script_path escapes workspace"}}
+
+## step 2 PASS
+cmd: POST /tasks/start /etc/passwd
+PASS；HTTP 400 body={"detail":{"error":"script_path must be relative to workspace"}}
+
+## step 3 PASS
+cmd: POST /tasks/start /opt/rsl_rl_isrc/... 
+PASS；HTTP 400 body={"detail":{"error":"script_path must be relative to workspace"}}
+
+## step 4 PASS
+cmd: POST /tasks/start jobs/train.py
+PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T03:13:06.042981+00:00'}
+
+## step 5 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 body={"status":"stopped"}

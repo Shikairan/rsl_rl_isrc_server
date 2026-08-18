@@ -1,0 +1,10 @@
+# T-A-02 2026-08-18 10:31:56 +0800
+passed=True
+
+## step 1 PASS
+cmd: /home/isrc5090/miniconda3/envs/serverA/bin/pytest -q tests/test_auth.py::test_login_success
+PASS；退出码 0；输出：. [100%] =============================== warnings summary =============================== ../../miniconda3/envs/serverA/lib/python3.11/site-packages/fastapi/testclient.py:1 /home/isrc5090/miniconda3/envs/serverA/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install…
+
+## step 2 PASS
+cmd: POST /login alice
+PASS；HTTP 200 nfs_host=10.250.30.115 nfs_export_path=/mnt/dockerContainer/nfs/alice token=有 expires_at=2026-08-19T02:31:55.883039Z

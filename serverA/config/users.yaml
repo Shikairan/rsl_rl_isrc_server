@@ -1,0 +1,32 @@
+# 验证环境账号。密码仅用于内网开发：{user}-dev
+users:
+  alice:
+    password_hash: "$2b$12$Y/9Z7BNb1SNUXbkY48QzxeT24mJNByyp8hQjV2vDbUo.7NpLknPkS"
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/alice"
+    local_mount_path: "/mnt/nfs/alice"
+  bob:
+    password_hash: "$2b$12$h.9Z.1iHI3IWTzBasoJD9ueWN4IShTAlvlYf3oBNCsP/N9ADjwn/."
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/bob"
+    local_mount_path: "/mnt/nfs/bob"
+  carol:
+    password_hash: "$2b$12$W2gNK83qU6H5oUMLLzq6Au0mdNou8de/XlxWBU.FvA7KpUZySkwfO"
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/carol"
+    local_mount_path: "/mnt/nfs/carol"
+  dave:
+    password_hash: "$2b$12$Lzciv14qhj4Q/PrHXHeyAeNyFRxiS1nV9no4KfZOdRu/YKSgmkWgK"
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/dave"
+    local_mount_path: "/mnt/nfs/dave"
+  eve:
+    password_hash: "$2b$12$IflVVkjmrPsmw7.ob0TlzuiSLOluoASx0378OM29KhbBRKR5WY8dO"
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/eve"
+    local_mount_path: "/mnt/nfs/eve"
+  frank:
+    password_hash: "$2b$12$6awL0W8QROmbWNXR2ZPg3uudfGJkBZjL.Jf8BfoRM6JdS9RFS.Yd2"
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/frank"
+    local_mount_path: "/mnt/nfs/frank"

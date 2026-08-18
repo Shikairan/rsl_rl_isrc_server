@@ -1,0 +1,19 @@
+server:
+  host: "0.0.0.0"
+  port: 8000
+  internal_ip: "10.213.35.42"
+  jwt_secret: "CHANGE_ME"
+  jwt_ttl_hours: 24
+  port_range: [31000, 31999]
+  obs_port_range: [32000, 32999]
+  nfs_mount_root: "/mnt/nfs"
+  container_workspace: "/workspace"
+  health:
+    interval_sec: 2
+    timeout_sec: 60
+  db_path: "./data/registry.db"
+  reconcile_interval_sec: 30
+  nfs:
+    enabled: false
+  docker:
+    enabled: true

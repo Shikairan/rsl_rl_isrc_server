@@ -1,0 +1,18 @@
+# T-OBS-05 2026-08-18 15:41:42 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-C RSL_RL_ISRC_OBS_RELAY_URL'
+PASS；退出码 0；输出：http://127.0.0.1:15558/post
+
+## step 2 PASS
+cmd: sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-C RSL_RL_ISRC_OBS_RELAY_TIMEOUT'
+PASS；退出码 0；输出：0.05
+
+## step 3 PASS
+cmd: sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-C OBS_ENABLE'
+PASS；退出码 0；输出：1
+
+## step 4 PASS
+cmd: sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-B RSL_RL_ISRC_OBS_RELAY_URL'
+PASS；退出码 1

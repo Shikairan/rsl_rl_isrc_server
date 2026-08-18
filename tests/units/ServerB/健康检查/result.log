@@ -1,0 +1,14 @@
+# T-B-01 2026-08-18 10:33:03 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker run -d --name sb-health --rm -p 18080:8080 rsl_rl_isrc:v3-B'
+PASS；退出码 0；inspect=running；输出：32d4cc63a7679071bd834bac31e6342478cd09a10086dd089e4e35aedcc7cf09
+
+## step 2 PASS
+cmd: curl -sS http://127.0.0.1:18080/health
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 3 PASS
+cmd: sg docker -c 'docker stop sb-health'
+PASS；退出码 0；输出：sb-health

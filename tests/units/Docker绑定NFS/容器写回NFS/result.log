@@ -1,0 +1,14 @@
+# T-D-02 2026-08-18 10:32:17 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker run --rm -v /mnt/nfs/alice:/workspace pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime bash -lc '"'"'echo from-container > /workspace/jobs/from_container.txt'"'"''
+PASS；退出码 0
+
+## step 2 PASS
+cmd: cat /mnt/nfs/alice/jobs/from_container.txt
+PASS；退出码 0；输出：from-container
+
+## step 3 PASS
+cmd: /home/isrc5090/miniconda3/bin/sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR kairan@10.250.30.115 'cat /mnt/dockerContainer/nfs/alice/jobs/from_container.txt'
+PASS；退出码 0；输出：from-container

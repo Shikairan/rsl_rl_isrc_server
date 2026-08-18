@@ -1,0 +1,36 @@
+{
+  "id": "T-OBS-05",
+  "dir": "/home/isrc5090/149server/tests/units/观测转发/中继环境变量",
+  "time": "2026-08-18 15:41:42 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-C RSL_RL_ISRC_OBS_RELAY_URL'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：http://127.0.0.1:15558/post"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-C RSL_RL_ISRC_OBS_RELAY_TIMEOUT'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：0.05"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-C OBS_ENABLE'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：1"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "sg docker -c 'docker run --rm --entrypoint printenv rsl_rl_isrc:v3-B RSL_RL_ISRC_OBS_RELAY_URL'",
+      "returncode": 1,
+      "result": "PASS；退出码 1"
+    }
+  ]
+}

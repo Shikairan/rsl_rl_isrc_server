@@ -1,0 +1,26 @@
+# I-06 2026-08-18 11:13:12 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /containers/start
+PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}
+
+## step 2 PASS
+cmd: sg docker -c 'docker rm -f runner-alice'
+PASS；退出码 0；docker=无；输出：runner-alice
+
+## step 3 PASS
+cmd: GET /containers/current
+PASS；HTTP 404 body={"detail":{"error":"no container"}}
+
+## step 4 PASS
+cmd: POST /containers/start 重建
+PASS；HTTP 200 old=10.213.35.42:31000 new=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}
+
+## step 5 PASS
+cmd: GET http://10.213.35.42:31000/health
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 6 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 body={"status":"stopped"} docker=无

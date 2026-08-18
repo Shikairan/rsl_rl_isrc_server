@@ -1,0 +1,10 @@
+# T-D-01 2026-08-18 10:32:16 +0800
+passed=True
+
+## step 1 PASS
+cmd: ls -l /mnt/nfs/alice/jobs/train.py
+PASS；退出码 0；输出：-rw-rw-r-- 1 isrc5090 isrc5090 2772 Aug 17 18:13 /mnt/nfs/alice/jobs/train.py
+
+## step 2 PASS
+cmd: sg docker -c 'docker run --rm -v /mnt/nfs/alice:/workspace pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime ls -l /workspace/jobs/train.py'
+PASS；退出码 0；输出：-rw-rw-r-- 1 ubuntu ubuntu 2772 Aug 17 10:13 /workspace/jobs/train.py

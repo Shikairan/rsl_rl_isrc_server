@@ -1,0 +1,57 @@
+{
+  "id": "I-OBS-03",
+  "dir": "/home/isrc5090/149server/tests/integration/I-OBS-03-同容器重复开训地址不变",
+  "time": "2026-08-18 16:34:59 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /containers/start rsl_rl_isrc:v3-C",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"server_b_endpoint\": \"10.213.35.42:31000\", \"obs_pub_endpoint\": \"10.213.35.42:32000\", \"container_status\": \"running\", \"container_name\": \"runner-alice\", \"nfs_mount_path\": \"/workspace\"}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "第一次 /tasks/start + SUB 收帧",
+      "returncode": 0,
+      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:34:44.594740+00:00', 'finished_at': '2026-08-18T08:34:51.669228+00:00'}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "第一次训练帧",
+      "returncode": 0,
+      "result": "PASS；[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.02625518478"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "GET /containers/current + 幂等 start",
+      "returncode": 0,
+      "result": "PASS；current=10.213.35.42:32000 start2=10.213.35.42:32000"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "第二次 /tasks/start + SUB 收帧",
+      "returncode": 0,
+      "result": "PASS；{'task_id': 't-2', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:34:51.887439+00:00', 'finished_at': '2026-08-18T08:34:58.720628+00:00'}"
+    },
+    {
+      "step": 6,
+      "ok": true,
+      "cmd": "第二次训练帧",
+      "returncode": 0,
+      "result": "PASS；[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.02625518478"
+    },
+    {
+      "step": 7,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    }
+  ]
+}

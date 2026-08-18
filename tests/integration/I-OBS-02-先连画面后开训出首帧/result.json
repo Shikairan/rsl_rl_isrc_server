@@ -1,0 +1,50 @@
+{
+  "id": "I-OBS-02",
+  "dir": "/home/isrc5090/149server/tests/integration/I-OBS-02-先连画面后开训出首帧",
+  "time": "2026-08-18 16:34:35 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "ls -l /mnt/nfs/alice/jobs/obs_iobs02_smoke.py",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：-rw-rw-r-- 1 isrc5090 isrc5090 310 Aug 18 16:34 /mnt/nfs/alice/jobs/obs_iobs02_smoke.py"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "POST /containers/start rsl_rl_isrc:v3-C gpu_count=2",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"server_b_endpoint\": \"10.213.35.42:31000\", \"obs_pub_endpoint\": \"10.213.35.42:32000\", \"container_status\": \"running\", \"container_name\": \"runner-alice\", \"nfs_mount_path\": \"/workspace\"}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "python3 -c '\nimport json, time, urllib.request, zmq\nep = '\"'\"'10.213.35.42:31000'\"'\"'\nobs_ep = '\"'\"'10.213.35.42:32000'\"'\"'\npayload = {\n  \"script_path\": '\"'\"'jobs/obs_iobs02_smoke.py'\"'\"',\n  \"torchrun_args\": [\"--nproc_per_node\", \"2\", \"--standalone\"],\n  \"script_args\": []\n}\nhost, port = obs_ep.rsplit(\":\", 1)\nctx = zmq.Context()\ns = ctx.socket(zmq.SUB)\ns.setsockopt(zmq.SUBSCRIBE, b\"\")\ns.setsockopt(zmq.RCVTIMEO, 60000)\ns.connect(f\"tcp://{host}:{port}\")\nreq = urllib.request.Request(\n  f\"http://{ep}/tasks/start\",\n  data=json.dumps(payload).encode(),\n  headers={\"content-type\": \"application/json\"},\n  method=\"POST\",\n)\nwith urllib.request.urlopen(req, timeout=20) as resp:\n  body = json.loads(resp.read().decode())\ntask_id = body[\"task_id\"]\nframe = json.loads(s.recv().decode())\ndeadline = time.time() + 120\nlast = {}\nwhile time.time() < deadline:\n  with urllib.request.urlopen(f\"http://{ep}/tasks/{task_id}/status\", timeout=8) as resp:\n    last = json.loads(resp.read().decode())\n  if last.get(\"status\") in {\"succeeded\", \"failed\", \"stopped\"}:\n    break\n  time.sleep(1)\nprint(json.dumps({\"task_id\": task_id, \"frame\": frame, \"final\": last}, ensure_ascii=False))\n'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：{\"task_id\": \"t-1\", \"frame\": [[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.026255184784531593, 0.08008196949958801, 0…"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "SUB obs_pub_endpoint 等首帧",
+      "returncode": 0,
+      "result": "PASS；frame_head=[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.02625518478"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "GET /tasks/$TASK_ID/status",
+      "returncode": 0,
+      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:34:27.510161+00:00', 'finished_at': '2026-08-18T08:34:34.634392+00:00'}"
+    },
+    {
+      "step": 6,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    }
+  ]
+}

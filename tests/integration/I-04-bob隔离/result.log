@@ -1,0 +1,30 @@
+# I-04 2026-08-18 11:14:38 +0800
+passed=True
+
+## step 1 PASS
+cmd: tee alice_only.txt / bob_only.txt
+PASS；alice ls=alice_only.txt jobs mount_test.txt rsl_rl_isrc wheels；bob ls=bob_only.txt
+
+## step 2 PASS
+cmd: POST /containers/start alice
+PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}
+
+## step 3 PASS
+cmd: POST /containers/start bob
+PASS；HTTP 200 endpoint=10.213.35.42:31001 (alice=10.213.35.42:31000) body={'server_b_endpoint': '10.213.35.42:31001', 'container_status': 'running', 'container_name': 'runner-bob', 'nfs_mount_path': '/workspace'}
+
+## step 4 PASS
+cmd: docker exec runner-alice ls / isolation
+PASS；ls=alice_only.txt jobs mount_test.txt rsl_rl_isrc wheels iso=isolated
+
+## step 5 PASS
+cmd: docker exec runner-bob ls / isolation
+PASS；ls=bob_only.txt iso=isolated
+
+## step 6 PASS
+cmd: POST /containers/stop alice token
+PASS；HTTP 200 body={"status":"stopped"}；runner-bob=runner-bob Up 2 seconds
+
+## step 7 PASS
+cmd: POST /containers/stop bob
+PASS；HTTP 200 body={"status":"stopped"} alice=无 bob=无

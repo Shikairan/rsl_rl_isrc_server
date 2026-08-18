@@ -1,0 +1,50 @@
+{
+  "id": "I-06",
+  "dir": "/home/isrc5090/149server/tests/integration/I-06-容器被杀后重建",
+  "time": "2026-08-18 11:13:12 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /containers/start",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "sg docker -c 'docker rm -f runner-alice'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；docker=无；输出：runner-alice"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "GET /containers/current",
+      "returncode": 404,
+      "result": "PASS；HTTP 404 body={\"detail\":{\"error\":\"no container\"}}"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "POST /containers/start 重建",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 old=10.213.35.42:31000 new=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "GET http://10.213.35.42:31000/health",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"ok\"}"
+    },
+    {
+      "step": 6,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"} docker=无"
+    }
+  ]
+}

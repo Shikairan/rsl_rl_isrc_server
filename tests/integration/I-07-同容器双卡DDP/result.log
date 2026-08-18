@@ -1,0 +1,26 @@
+# I-07 2026-08-18 11:13:26 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /containers/start gpu_count=2
+PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}
+
+## step 2 PASS
+cmd: sg docker -c 'docker exec runner-alice python3 -c '"'"'import torch;print(torch.cuda.device_count())'"'"''
+PASS；退出码 0；输出：2
+
+## step 3 PASS
+cmd: GET http://10.213.35.42:31000/health
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 4 PASS
+cmd: sg docker -c 'docker exec -w /opt/rsl_rl_isrc runner-alice torchrun --standalone --nnodes=1 --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 16 --max-iterations 3 --no-zmq-obs'
+PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.9 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_feat…
+
+## step 5 PASS
+cmd: GET http://10.213.35.42:31000/health 训练后
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 6 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 body={"status":"stopped"} docker=无

@@ -1,0 +1,6 @@
+# T-F-01 2026-08-18 10:32:36 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker run --rm --gpus 1 rsl_rl_isrc:v3 python -c '"'"'import rsl_rl_isrc, torch, mujoco; print(rsl_rl_isrc.__file__); print(torch.__version__, torch.cuda.is_available()); print(mujoco.__version__)'"'"''
+PASS；退出码 0；输出：/opt/rsl_rl_isrc/rsl_rl_isrc/__init__.py 2.11.0+cu128 True 3.11.0

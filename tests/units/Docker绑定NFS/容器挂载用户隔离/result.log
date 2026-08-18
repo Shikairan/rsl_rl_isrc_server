@@ -1,0 +1,6 @@
+# T-D-03 2026-08-18 10:32:18 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker run --rm -v /mnt/nfs/alice:/workspace pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime bash -lc '"'"'ls /workspace; test ! -f /workspace/bob_only.txt && echo isolated'"'"''
+PASS；退出码 0；输出：jobs mount_test.txt rsl_rl_isrc wheels isolated

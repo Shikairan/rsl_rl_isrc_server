@@ -1,0 +1,10 @@
+# T-NFS-01 2026-08-18 10:31:47 +0800
+passed=True
+
+## step 1 PASS
+cmd: showmount -e 10.250.30.115
+PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8
+
+## step 2 PASS
+cmd: /home/isrc5090/miniconda3/bin/sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR kairan@10.250.30.115 'systemctl is-active nfs-server'
+PASS；退出码 0；输出：active

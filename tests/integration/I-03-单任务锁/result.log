@@ -1,0 +1,22 @@
+# I-03 2026-08-18 11:13:03 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /tasks/start epochs=999
+PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T03:12:57.370065+00:00'}
+
+## step 2 PASS
+cmd: POST /tasks/start 第二次
+PASS；HTTP 409 body={"detail":{"error":"a task is already running"}}
+
+## step 3 PASS
+cmd: POST /tasks/t-1/stop
+PASS；HTTP 200 body={"status":"stopped"}
+
+## step 4 PASS
+cmd: POST /tasks/start 短训
+PASS；HTTP 202 start={'task_id': 't-2', 'status': 'running', 'started_at': '2026-08-18T03:12:57.928074+00:00'} status={'task_id': 't-2', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T03:12:57.928074+00:00', 'finished_at': '2026-08-18T03:13:02.645442+00:00'}
+
+## step 5 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 body={"status":"stopped"}

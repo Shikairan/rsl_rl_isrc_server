@@ -1,0 +1,29 @@
+{
+  "id": "T-NFS-05",
+  "dir": "/home/isrc5090/149server/tests/NFS/nfs-server重启后导出仍在",
+  "time": "2026-08-18 10:31:51 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "showmount -e 10.250.30.115",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "/home/isrc5090/miniconda3/bin/sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR kairan@10.250.30.115 'sudo systemctl restart nfs-server && systemctl is-active nfs-server'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：active"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "showmount -e 10.250.30.115",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8"
+    }
+  ]
+}

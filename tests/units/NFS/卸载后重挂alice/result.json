@@ -1,0 +1,36 @@
+{
+  "id": "T-NFS-04",
+  "dir": "/home/isrc5090/149server/tests/NFS/卸载后重挂alice",
+  "time": "2026-08-18 10:31:48 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "sudo -S -p '' umount /mnt/nfs/alice",
+      "returncode": 0,
+      "result": "PASS；退出码 0；findmnt 无挂载"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "sudo -S -p '' mount -t nfs -o vers=4 10.250.30.115:/mnt/dockerContainer/nfs/alice /mnt/nfs/alice",
+      "returncode": 0,
+      "result": "PASS；退出码 0"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "findmnt -n -o SOURCE,FSTYPE /mnt/nfs/alice",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：10.250.30.115:/mnt/dockerContainer/nfs/alice nfs4"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "ls /mnt/nfs/alice/jobs",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：from_container.txt last_run.txt nfs_rw.txt train.py"
+    }
+  ]
+}

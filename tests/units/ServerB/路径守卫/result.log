@@ -1,0 +1,10 @@
+# T-B-02 2026-08-18 10:33:04 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /tasks/start script_path=../etc/passwd
+PASS；HTTP 400 body={"detail":{"error":"script_path escapes workspace"}}
+
+## step 2 PASS
+cmd: POST /tasks/start script_path=/etc/passwd
+PASS；HTTP 400 body={"detail":{"error":"script_path must be relative to workspace"}}

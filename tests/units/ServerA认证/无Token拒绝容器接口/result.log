@@ -1,0 +1,10 @@
+# T-A-04 2026-08-18 10:32:01 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /containers/start 无 token
+PASS；HTTP 401 body={"detail":{"error":"missing token"}}
+
+## step 2 PASS
+cmd: /home/isrc5090/miniconda3/envs/serverA/bin/pytest -q tests/test_auth.py::test_containers_disabled_without_token
+PASS；退出码 0；输出：. [100%] =============================== warnings summary =============================== ../../miniconda3/envs/serverA/lib/python3.11/site-packages/fastapi/testclient.py:1 /home/isrc5090/miniconda3/envs/serverA/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install…

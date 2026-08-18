@@ -1,0 +1,18 @@
+# NFS 侧用户目录（无登录密码）。改完后在本机执行: python nfsctl.py apply
+nfs_host: "10.250.30.115"
+export_root: "/mnt/dockerContainer/nfs"
+allowed_cidr: "10.0.0.0/8"
+mount_options: "rw,sync,no_subtree_check,no_root_squash"
+users:
+  alice:
+    export_path: "/mnt/dockerContainer/nfs/alice"
+  bob:
+    export_path: "/mnt/dockerContainer/nfs/bob"
+  carol:
+    export_path: "/mnt/dockerContainer/nfs/carol"
+  dave:
+    export_path: "/mnt/dockerContainer/nfs/dave"
+  eve:
+    export_path: "/mnt/dockerContainer/nfs/eve"
+  frank:
+    export_path: "/mnt/dockerContainer/nfs/frank"

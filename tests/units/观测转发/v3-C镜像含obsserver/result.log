@@ -1,0 +1,18 @@
+# T-OBS-02 2026-08-18 15:38:16 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker image inspect rsl_rl_isrc:v3-C --format '"'"'{{.Id}}'"'"''
+PASS；退出码 0；输出：sha256:7e3e1f8913ef8ab409ba3a4069a07b686d83394b4d1567c722074031bce7fcae
+
+## step 2 PASS
+cmd: sg docker -c 'docker run --rm --entrypoint python3 rsl_rl_isrc:v3-C -c '"'"'import obsserver; from obsserver.transform import transform; print(transform([[1]]))'"'"''
+PASS；退出码 0；输出：[[1]]
+
+## step 3 PASS
+cmd: sg docker -c 'docker image inspect rsl_rl_isrc:v3-C --format '"'"'{{json .Config.ExposedPorts}}'"'"''
+PASS；退出码 0；输出：{"15557/tcp":{},"8080/tcp":{}}
+
+## step 4 PASS
+cmd: sg docker -c 'docker run --rm --entrypoint python3 rsl_rl_isrc:v3-B -c '"'"'import obsserver'"'"''
+PASS；退出码 1；输出：Traceback (most recent call last): File "<string>", line 1, in <module> ModuleNotFoundError: No module named 'obsserver'

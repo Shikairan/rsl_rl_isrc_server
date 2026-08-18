@@ -1,0 +1,62 @@
+# I-08 2026-08-18 11:14:54 +0800
+passed=True
+
+## step 1 PASS
+cmd: GET http://10.213.35.42:8000/health
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 2 PASS
+cmd: POST /login alice
+PASS；HTTP 200 nfs_host=10.250.30.115 token_len=147
+
+## step 3 PASS
+cmd: findmnt /mnt/nfs/alice
+PASS；退出码 0；输出：TARGET SOURCE FSTYPE OPTIONS /mnt/nfs/alice 10.250.30.115:/mnt/dockerContainer/nfs/alice nfs4 rw,relatime,vers=4.2,rsize=1048576,wsize=1048576,namlen=255,hard,fatal_neterrors=none,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=10.213.35.42,local_lock=none,addr=10.250.30.115
+
+## step 4 PASS
+cmd: nvidia-smi --query-gpu=index,uuid --format=csv
+PASS；退出码 0；GPU4=GPU-92438bf1-5d53-fa0a-2801-81a6ea00fccd；输出：index, uuid 0, GPU-8f3532a7-6994-9d8d-7ab2-962e3e4fd2cd 1, GPU-54dacabd-569b-f97a-b07c-52917620e8fd 2, GPU-6f1ae41a-8a1b-cb4d-78e6-ee6cca10242b 3, GPU-4469f8e3-945d-5f0c-6e16-b18fd0e6c257 4, GPU-92438bf1-5d53-fa0a-2801-81a6ea00fccd 5, GPU-6e1d68b0-2ea5-1e96-6f16-d638d5341e40 6, GPU-96d0ab7b-ceec-1dec-1c0f-7adc7d1dac2b 7, GPU-a6ec4063-b604-1895-afd2-e2a9e15c…
+
+## step 5 PASS
+cmd: ls /mnt/nfs/alice/jobs/g1_ddp4.py
+PASS；退出码 0；输出：/mnt/nfs/alice/jobs/g1_ddp4.py
+
+## step 6 PASS
+cmd: POST /containers/start gpu_count=8
+PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}
+
+## step 7 PASS
+cmd: GET http://10.213.35.42:31000/health
+PASS；HTTP 200 body={"status":"ok"}
+
+## step 8 PASS
+cmd: sg docker -c 'docker exec runner-alice python3 -c '"'"'import torch;print(torch.cuda.device_count());print(torch.cuda.get_device_properties(4).uuid)'"'"''
+PASS；退出码 0；host4=GPU-92438bf1-5d53-fa0a-2801-81a6ea00fccd；输出：8 92438bf1-5d53-fa0a-2801-81a6ea00fccd
+
+## step 9 PASS
+cmd: POST /tasks/start jobs/g1_ddp4.py nproc=4
+PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T03:14:43.413924+00:00'}
+
+## step 10 PASS
+cmd: nvidia-smi 训练中采样
+PASS；0, 0, 25795 1, 0, 25795 2, 0, 25795 3, 0, 25795 4, 74, 4357 5, 89, 4357 6, 51, 4357 7, 71, 4357
+
+## step 11 PASS
+cmd: GET /tasks/t-1/status
+PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T03:14:43.413924+00:00', 'finished_at': '2026-08-18T03:14:54.219349+00:00'}
+
+## step 12 PASS
+cmd: GET /tasks/t-1/logs（运行中采集）
+PASS；W0818 03:14:44.587000 169 torch/distributed/run.py:851] W0818 03:14:44.587000 169 torch/distributed/run.py:851] ***************************************** W0818 03:14:44.587000 169 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. …
+
+## step 13 PASS
+cmd: cat /mnt/nfs/alice/jobs/last_ddp4.txt
+PASS；退出码 0；输出：world_size=4 visible=4,5,6,7 exit=ok
+
+## step 14 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 body={"status":"stopped"}
+
+## step 15 PASS
+cmd: docker ps -a --filter name=runner-alice
+PASS；无 runner-alice

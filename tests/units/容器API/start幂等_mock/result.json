@@ -1,0 +1,15 @@
+{
+  "id": "T-A-07",
+  "dir": "/home/isrc5090/149server/tests/容器API/start幂等_mock",
+  "time": "2026-08-18 10:32:06 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "/home/isrc5090/miniconda3/envs/serverA/bin/pytest -q tests/test_containers.py::test_start_idempotent",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：. [100%] =============================== warnings summary =============================== ../../miniconda3/envs/serverA/lib/python3.11/site-packages/fastapi/testclient.py:1 /home/isrc5090/miniconda3/envs/serverA/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install…"
+    }
+  ]
+}

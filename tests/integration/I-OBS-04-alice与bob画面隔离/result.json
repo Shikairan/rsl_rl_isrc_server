@@ -1,0 +1,50 @@
+{
+  "id": "I-OBS-04",
+  "dir": "/home/isrc5090/149server/tests/integration/I-OBS-04-alice与bob画面隔离",
+  "time": "2026-08-18 16:35:40 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "alice start",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"server_b_endpoint\": \"10.213.35.42:31000\", \"obs_pub_endpoint\": \"10.213.35.42:32000\", \"container_status\": \"running\", \"container_name\": \"runner-alice\", \"nfs_mount_path\": \"/workspace\"}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "bob start",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"server_b_endpoint\": \"10.213.35.42:31001\", \"obs_pub_endpoint\": \"10.213.35.42:32001\", \"container_status\": \"running\", \"container_name\": \"runner-bob\", \"nfs_mount_path\": \"/workspace\"}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "compare obs_pub_endpoint",
+      "returncode": 0,
+      "result": "PASS；alice=10.213.35.42:32000 bob=10.213.35.42:32001"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "alice train 时对比 alice/bob SUB",
+      "returncode": 0,
+      "result": "PASS；alice_frame=True bob_frame=False"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "bob train 时对比 bob/alice SUB",
+      "returncode": 0,
+      "result": "PASS；bob_frame=True alice_frame=False"
+    },
+    {
+      "step": 6,
+      "ok": true,
+      "cmd": "stop alice/bob containers",
+      "returncode": 0,
+      "result": "PASS；alice=200:{\"status\":\"stopped\"} bob=200:{\"status\":\"stopped\"}"
+    }
+  ]
+}

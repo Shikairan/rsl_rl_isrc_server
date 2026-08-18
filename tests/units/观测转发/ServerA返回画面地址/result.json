@@ -1,0 +1,50 @@
+{
+  "id": "T-OBS-07",
+  "dir": "/home/isrc5090/149server/tests/units/观测转发/ServerA返回画面地址",
+  "time": "2026-08-18 16:16:16 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /containers/start rsl_rl_isrc:v3-C",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 server_b=10.213.35.42:31000 obs_pub=10.213.35.42:32000 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "POST /login",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 server_b=10.213.35.42:31000 obs_pub=10.213.35.42:32000 body={\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTc4NzEyNzM3NSwiaWF0IjoxNzg3MDQwOTc1fQ.9QKFl_pbxjij6gdgZGVlr6C92tJ-bInSrGyWdGRQZ58\",\"expires_at\":\"2026-08-19T08:16:15.200884Z\",\"nfs_host\":\"10.250.30.115\",\"nfs_export_path\":\"/mnt/dockerContainer/nfs/alice\",\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\"}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "TCP connect obs_pub_endpoint",
+      "returncode": 0,
+      "result": "PASS；obs_pub=10.213.35.42:32000 tcp_ready=True probe=ok"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "sg docker -c 'docker ps --filter name=runner-alice --format '\"'\"'{{.Ports}}'\"'\"''",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：10.213.35.42:31000->8080/tcp, 10.213.35.42:32000->15557/tcp"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "GET /containers/current + POST /containers/start again",
+      "returncode": 0,
+      "result": "PASS；current HTTP 200 obs_pub=10.213.35.42:32000 start2 HTTP 200 obs_pub=10.213.35.42:32000 same_name=True"
+    },
+    {
+      "step": 6,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    }
+  ]
+}

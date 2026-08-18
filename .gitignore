@@ -1,0 +1,18 @@
+# 凭据与本机备忘，不要进远程
+115ssh
+localpasswd
+pull
+
+# 第三方 skills 副本，不随本仓库推送
+skills-main/
+
+# Python / 测试产物
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.venv/
+venv/
+
+# Server A 运行时库
+serverA/data/
+*.db

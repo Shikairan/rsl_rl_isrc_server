@@ -1,0 +1,43 @@
+{
+  "id": "I-05",
+  "dir": "/home/isrc5090/149server/tests/integration/I-05-路径守卫",
+  "time": "2026-08-18 11:13:06 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /tasks/start ../etc/passwd",
+      "returncode": 400,
+      "result": "PASS；HTTP 400 body={\"detail\":{\"error\":\"script_path escapes workspace\"}}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "POST /tasks/start /etc/passwd",
+      "returncode": 400,
+      "result": "PASS；HTTP 400 body={\"detail\":{\"error\":\"script_path must be relative to workspace\"}}"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "POST /tasks/start /opt/rsl_rl_isrc/... ",
+      "returncode": 400,
+      "result": "PASS；HTTP 400 body={\"detail\":{\"error\":\"script_path must be relative to workspace\"}}"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "POST /tasks/start jobs/train.py",
+      "returncode": 202,
+      "result": "PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T03:13:06.042981+00:00'}"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    }
+  ]
+}
