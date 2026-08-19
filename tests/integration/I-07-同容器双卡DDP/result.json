@@ -1,7 +1,7 @@
 {
   "id": "I-07",
   "dir": "/home/isrc5090/149server/tests/integration/I-07-同容器双卡DDP",
-  "time": "2026-08-18 11:13:26 +0800",
+  "time": "2026-08-18 19:02:43 +0800",
   "passed": true,
   "steps": [
     {
@@ -9,7 +9,7 @@
       "ok": true,
       "cmd": "POST /containers/start gpu_count=2",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
     },
     {
       "step": 2,
@@ -30,7 +30,7 @@
       "ok": true,
       "cmd": "sg docker -c 'docker exec -w /opt/rsl_rl_isrc runner-alice torchrun --standalone --nnodes=1 --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 16 --max-iterations 3 --no-zmq-obs'",
       "returncode": 0,
-      "result": "PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.9 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_feat…"
+      "result": "PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.12 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_fea…"
     },
     {
       "step": 5,

@@ -1,4 +1,4 @@
-# T-A-10 2026-08-18 10:32:16 +0800
+# T-A-10 2026-08-18 18:59:13 +0800
 passed=True
 
 ## step 1 PASS
@@ -6,8 +6,8 @@ cmd: POST /login
 PASS；HTTP 200 token_len=147
 
 ## step 2 PASS
-cmd: POST /containers/start image=rsl_rl_isrc:v3-B gpu_count=0
-PASS；HTTP 200 endpoint=10.213.35.42:31000 body={"server_b_endpoint":"10.213.35.42:31000","container_status":"running","container_name":"runner-alice","nfs_mount_path":"/workspace"}
+cmd: POST /containers/start image=rsl_rl_isrc:v3-C gpu_count=0
+PASS；HTTP 200 endpoint=10.213.35.42:31000 body={"server_b_endpoint":"10.213.35.42:31000","obs_pub_endpoint":"10.213.35.42:32000","container_status":"running","container_name":"runner-alice","nfs_mount_path":"/workspace"}
 
 ## step 3 PASS
 cmd: GET http://10.213.35.42:31000/health
@@ -15,4 +15,4 @@ PASS；HTTP 200 body={"status":"ok"}
 
 ## step 4 PASS
 cmd: GET /containers/current ; POST /containers/stop ; docker ps
-PASS；current HTTP 200 {"server_b_endpoint":"10.213.35.42:31000","container_status":"running","container_name":"runner-alice","nfs_mount_path":"/workspace"}；stop HTTP 200 {"status":"stopped"}；docker=无 runner-alice
+PASS；current HTTP 200 {"server_b_endpoint":"10.213.35.42:31000","obs_pub_endpoint":"10.213.35.42:32000","container_status":"running","container_name":"runner-alice","nfs_mount_path":"/workspace"}；stop HTTP 200 {"status":"stopped"}；docker=无 runner-alice

@@ -1,7 +1,7 @@
 {
   "id": "T-A-10",
-  "dir": "/home/isrc5090/149server/tests/容器API/真实Docker_start",
-  "time": "2026-08-18 10:32:16 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/容器API/真实Docker_start",
+  "time": "2026-08-18 18:59:13 +0800",
   "passed": true,
   "steps": [
     {
@@ -14,9 +14,9 @@
     {
       "step": 2,
       "ok": true,
-      "cmd": "POST /containers/start image=rsl_rl_isrc:v3-B gpu_count=0",
+      "cmd": "POST /containers/start image=rsl_rl_isrc:v3-C gpu_count=0",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
     },
     {
       "step": 3,
@@ -30,7 +30,7 @@
       "ok": true,
       "cmd": "GET /containers/current ; POST /containers/stop ; docker ps",
       "returncode": 200,
-      "result": "PASS；current HTTP 200 {\"server_b_endpoint\":\"10.213.35.42:31000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}；stop HTTP 200 {\"status\":\"stopped\"}；docker=无 runner-alice"
+      "result": "PASS；current HTTP 200 {\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}；stop HTTP 200 {\"status\":\"stopped\"}；docker=无 runner-alice"
     }
   ]
 }

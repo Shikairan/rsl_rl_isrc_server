@@ -40,9 +40,9 @@ sudo_cmd = _uc.sudo_cmd
 wait_http = _uc.wait_http
 
 A_HOST = "10.213.35.42"
-A_PORT = int(os.environ.get("INTEGRATION_A_PORT", "8000"))
+A_PORT = int(os.environ.get("INTEGRATION_A_PORT", "8017"))
 A_BASE = f"http://{A_HOST}:{A_PORT}"
-SB_IMAGE = "rsl_rl_isrc:v3-B"
+SB_IMAGE = "rsl_rl_isrc:v3-C"
 ALICE = {"username": "alice", "password": "alice-dev"}
 BOB = {"username": "bob", "password": "bob-dev"}
 
@@ -63,7 +63,7 @@ def a_healthy() -> bool:
 
 
 def ensure_live_a() -> str:
-    """Reuse site Server A on 10.213.35.42:8000; start it if down. Do not use unit sqlite."""
+    """Reuse site Server A on 10.213.35.42:8017; start it if down. Do not use unit sqlite."""
     global _A_PROC
     if a_healthy():
         return "reused"

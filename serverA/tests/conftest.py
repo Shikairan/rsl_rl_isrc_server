@@ -17,6 +17,7 @@ def client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient:
     monkeypatch.setenv("SERVER_A_JWT_SECRET", "test-secret-must-be-32-bytes-ok!")
     monkeypatch.setenv("SERVER_A_DOCKER_ENABLED", "false")
     monkeypatch.setenv("SERVER_A_NFS_ENABLED", "false")
+    monkeypatch.setenv("SERVER_A_LOG_ENABLED", "false")
     monkeypatch.setenv("SERVER_A_DB_PATH", str(tmp_path / "registry.db"))
     from app.main import app
 
@@ -30,6 +31,7 @@ def docker_client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient
     monkeypatch.setenv("SERVER_A_JWT_SECRET", "test-secret-must-be-32-bytes-ok!")
     monkeypatch.setenv("SERVER_A_DOCKER_ENABLED", "true")
     monkeypatch.setenv("SERVER_A_NFS_ENABLED", "false")
+    monkeypatch.setenv("SERVER_A_LOG_ENABLED", "false")
     monkeypatch.setenv("SERVER_A_DB_PATH", str(tmp_path / "registry.db"))
     from app.main import app
 

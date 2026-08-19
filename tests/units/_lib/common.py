@@ -181,7 +181,7 @@ def port_free(port: int) -> bool:
 
 
 class ServerA:
-    def __init__(self, *, docker: bool, nfs: bool = False, port: int = 8000) -> None:
+    def __init__(self, *, docker: bool, nfs: bool = False, port: int = 18017) -> None:
         self.docker = docker
         self.nfs = nfs
         self.port = port

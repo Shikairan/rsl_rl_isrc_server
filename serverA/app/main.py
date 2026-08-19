@@ -5,21 +5,23 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.access_middleware import AccessLogMiddleware
 from app.config import load_settings
 from app.container_service import ContainerService
 from app.docker_mgr import DockerMgr
+from app.logging_setup import setup_logging
 from app.nfs import NfsError, mount_all_users
 from app.ports import PortPool
 from app.registry import Registry
 from app.routers import auth, containers
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("server_a")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = load_settings()
+    setup_logging(settings)
     app.state.settings = settings
     try:
         mount_all_users(settings)
@@ -39,16 +41,18 @@ async def lifespan(app: FastAPI):
     app.state.docker = docker
     app.state.containers = ContainerService(settings, registry, ports, obs_ports, docker)
     logger.info(
-        "server A ready nfs.enabled=%s docker.enabled=%s users=%s db=%s",
+        "server A ready nfs.enabled=%s docker.enabled=%s users=%s db=%s log_dir=%s",
         settings.server.nfs.enabled,
         settings.server.docker.enabled,
         list(settings.users),
         settings.db_path,
+        settings.log_dir if settings.server.logging.enabled else "(disabled)",
     )
     yield
 
 
 app = FastAPI(title="Server A", version="0.1.0", lifespan=lifespan)
+app.add_middleware(AccessLogMiddleware)
 app.include_router(auth.router)
 app.include_router(containers.router)
 

@@ -1,7 +1,7 @@
 {
   "id": "T-A-01",
-  "dir": "/home/isrc5090/149server/tests/ServerA认证/健康检查",
-  "time": "2026-08-18 10:31:53 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/ServerA认证/健康检查",
+  "time": "2026-08-18 18:58:50 +0800",
   "passed": true,
   "steps": [
     {
@@ -14,7 +14,7 @@
     {
       "step": 2,
       "ok": true,
-      "cmd": "curl -sS http://127.0.0.1:8000/health",
+      "cmd": "curl -sS http://127.0.0.1:18017/health",
       "returncode": 0,
       "result": "PASS；HTTP 200 body={\"status\":\"ok\"}"
     }

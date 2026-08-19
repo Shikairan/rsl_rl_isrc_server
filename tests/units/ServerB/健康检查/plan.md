@@ -17,7 +17,7 @@ Server B 代码打入镜像后才能执行。当前 rsl_rl_isrc:v3 不满足。
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 后台启动容器映射 8080 | `docker run -d --name sb-health --rm -p 18080:8080 <server-b-image>` | 容器 running | PASS；退出码 0；inspect=running；输出：32d4cc63a7679071bd834bac31e6342478cd09a10086dd089e4e35aedcc7cf09 |
+| 1 | 后台启动容器映射 8080 | `docker run -d --name sb-health --rm -p 18080:8080 <server-b-image>` | 容器 running | PASS；退出码 0；inspect=running；输出：96af23ea12f7b66aca77f68079742e313faa1b95f2ba064f7e00b42d18b4f038 |
 | 2 | 打健康检查 | `curl -sS http://127.0.0.1:18080/health` | 200 {"status":"ok"} | PASS；HTTP 200 body={"status":"ok"} |
 | 3 | 清理 | `docker stop sb-health` | 容器退出 | PASS；退出码 0；输出：sb-health |
 

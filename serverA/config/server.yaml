@@ -17,3 +17,11 @@ server:
     enabled: false
   docker:
     enabled: true
+  logging:
+    enabled: true
+    dir: "./logs"
+    level: INFO
+    console: true
+    access_log: true
+    max_bytes: 10485760
+    backup_count: 5

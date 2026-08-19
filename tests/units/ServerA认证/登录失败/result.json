@@ -1,7 +1,7 @@
 {
   "id": "T-A-03",
-  "dir": "/home/isrc5090/149server/tests/ServerA认证/登录失败",
-  "time": "2026-08-18 10:31:59 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/ServerA认证/登录失败",
+  "time": "2026-08-18 18:58:56 +0800",
   "passed": true,
   "steps": [
     {

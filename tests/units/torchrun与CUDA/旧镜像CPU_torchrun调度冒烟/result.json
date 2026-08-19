@@ -1,7 +1,7 @@
 {
   "id": "T-E-01",
-  "dir": "/home/isrc5090/149server/tests/torchrun与CUDA/旧镜像CPU_torchrun调度冒烟",
-  "time": "2026-08-18 10:32:22 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/torchrun与CUDA/旧镜像CPU_torchrun调度冒烟",
+  "time": "2026-08-18 18:59:19 +0800",
   "passed": true,
   "steps": [
     {
@@ -16,7 +16,7 @@
       "ok": true,
       "cmd": "cat /mnt/nfs/alice/jobs/last_run.txt",
       "returncode": 0,
-      "result": "PASS；退出码 0；输出：finished_at=2026-08-18T02:32:21.959445+00:00 device=cpu torch=2.4.1+cu121 loss=1.2146183252334595"
+      "result": "PASS；退出码 0；输出：finished_at=2026-08-18T10:59:19.158752+00:00 device=cpu torch=2.4.1+cu121 loss=0.900481104850769"
     }
   ]
 }

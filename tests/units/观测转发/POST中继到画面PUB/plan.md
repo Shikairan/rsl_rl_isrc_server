@@ -21,7 +21,7 @@
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 起容器 | 同 T-OBS-03 步骤 1，`--name obs-pub` | running | PASS；退出码 0；health_ready=True；输出：8ee5ea7da5aeb25ba132c490ad7e0d625523273c384d4d3f73e39bd11a3f0142 |
+| 1 | 起容器 | 同 T-OBS-03 步骤 1，`--name obs-pub` | running | PASS；退出码 0；health_ready=True；输出：0acdc77e763a58b069e80b2e64092318e8370faa3e1fa60af83a27f67d019b4f |
 | 2 | 宿主机 SUB（后台） | `python3 - <<'PY' & sleep 0.3` … SUB 连 `tcp://127.0.0.1:15557`，收到一条消息后打印并退出 | 见下方脚本块 | PASS；退出码 0；输出：ok [[[0.1, 0.2, 0.9], [0.0, 0.0, 0.0, 1.0], [0.5, -0.3]]] |
 | 3 | 容器内 POST | `sg docker -c 'docker exec obs-pub python3 -c "import json,urllib.request; urllib.request.urlopen(urllib.request.Request(\"http://127.0.0.1:15558/post\", data=json.dumps([[[0.1,0.2,0.9],[0,0,0,1],[0.5,-0.3]]]).encode(), headers={\"Content-Type\":\"application/json\"}, method=\"POST\")).read()"'` | 返回 `b'ok'` | PASS；退出码 0；输出：obs-pub |
 | 4 | 确认 SUB 输出 | 等待 SUB 进程 | stdout 为与 POST 相同的 JSON 数组 |  |

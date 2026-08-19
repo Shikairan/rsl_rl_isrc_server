@@ -1,7 +1,7 @@
 {
   "id": "I-06",
   "dir": "/home/isrc5090/149server/tests/integration/I-06-容器被杀后重建",
-  "time": "2026-08-18 11:13:12 +0800",
+  "time": "2026-08-18 19:01:57 +0800",
   "passed": true,
   "steps": [
     {
@@ -9,7 +9,7 @@
       "ok": true,
       "cmd": "POST /containers/start",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
     },
     {
       "step": 2,
@@ -30,7 +30,7 @@
       "ok": true,
       "cmd": "POST /containers/start 重建",
       "returncode": 200,
-      "result": "PASS；HTTP 200 old=10.213.35.42:31000 new=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+      "result": "PASS；HTTP 200 old=10.213.35.42:31000 new=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
     },
     {
       "step": 5,

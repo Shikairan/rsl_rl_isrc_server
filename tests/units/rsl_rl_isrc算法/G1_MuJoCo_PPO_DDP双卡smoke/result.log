@@ -1,6 +1,6 @@
-# T-F-02 2026-08-18 10:32:45 +0800
+# T-F-02 2026-08-18 18:59:40 +0800
 passed=True
 
 ## step 1 PASS
 cmd: sg docker -c 'docker run --rm --gpus 2 --shm-size=16g --ipc=host -w /opt/rsl_rl_isrc rsl_rl_isrc:v3 torchrun --standalone --nnodes=1 --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 16 --max-iterations 2 --no-zmq-obs'
-PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.9 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_feat…
+PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.12 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_fea…

@@ -1,7 +1,7 @@
 {
   "id": "T-OBS-06",
   "dir": "/home/isrc5090/149server/tests/units/观测转发/训练开ZMQ经中继出画面",
-  "time": "2026-08-18 15:41:49 +0800",
+  "time": "2026-08-18 19:00:11 +0800",
   "passed": true,
   "steps": [
     {
@@ -9,7 +9,7 @@
       "ok": true,
       "cmd": "sg docker -c 'docker run -d --name obs-train --gpus 2 --shm-size=16g --ipc=host -p 127.0.0.1:15557:15557 rsl_rl_isrc:v3-C'",
       "returncode": 0,
-      "result": "PASS；退出码 0；输出：ff6cb50af4f596a124bdb770fb461eaee9a1af1b6059939160d4d3200b6b2e7b"
+      "result": "PASS；退出码 0；输出：0877546d7dcf38359d74ec475a302f9b1d90ca387b6ea51b8b0ff21c1c55ea0a"
     },
     {
       "step": 2,

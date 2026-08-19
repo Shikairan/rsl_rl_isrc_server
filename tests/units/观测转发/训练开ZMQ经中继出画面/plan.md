@@ -20,7 +20,7 @@
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 起容器（GPU） | `sg docker -c 'docker run -d --name obs-train --gpus 2 --shm-size=16g --ipc=host -p 127.0.0.1:15557:15557 rsl_rl_isrc:v3-C'` | running | PASS；退出码 0；输出：ff6cb50af4f596a124bdb770fb461eaee9a1af1b6059939160d4d3200b6b2e7b |
+| 1 | 起容器（GPU） | `sg docker -c 'docker run -d --name obs-train --gpus 2 --shm-size=16g --ipc=host -p 127.0.0.1:15557:15557 rsl_rl_isrc:v3-C'` | running | PASS；退出码 0；输出：0877546d7dcf38359d74ec475a302f9b1d90ca387b6ea51b8b0ff21c1c55ea0a |
 | 2 | 宿主机 SUB 后台 | 同 T-OBS-04 SUB 脚本，超时 ≥60s | — | PASS；退出码 0；输出：[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.026255184784531593, 0.08008196949958801, 0.07164422422647476, 0.042632… |
 | 3 | 极短 DDP + zmq obs | `sg docker -c 'docker exec -w /opt/rsl_rl_isrc obs-train torchrun --standalone --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 8 --max-iterations 1'` | 退出码 0；日志含 ObsInstrServer PULL/REP | PASS；退出码 0；输出：obs-train |
 | 4 | SUB 收到帧 | 查看 SUB 输出 | 非空 JSON 数组；元素为 `[pos,quat,dof]` 行 |  |

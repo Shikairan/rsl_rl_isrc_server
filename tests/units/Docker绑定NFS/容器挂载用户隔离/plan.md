@@ -17,7 +17,7 @@
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 仅挂 alice 进容器并查找 bob 文件 | `docker run --rm -v /mnt/nfs/alice:/workspace pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime bash -lc 'ls /workspace; test ! -f /workspace/bob_only.txt && echo isolated'` | 输出 isolated；ls 无 bob_only.txt | PASS；退出码 0；输出：jobs mount_test.txt rsl_rl_isrc wheels isolated |
+| 1 | 仅挂 alice 进容器并查找 bob 文件 | `docker run --rm -v /mnt/nfs/alice:/workspace pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime bash -lc 'ls /workspace; test ! -f /workspace/bob_only.txt && echo isolated'` | 输出 isolated；ls 无 bob_only.txt | PASS；退出码 0；输出：alice_only.txt jobs logs mount_test.txt rsl_rl_isrc wheels isolated |
 
 ## 通过标准
 

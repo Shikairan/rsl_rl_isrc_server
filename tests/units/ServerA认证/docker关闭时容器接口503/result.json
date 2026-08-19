@@ -1,7 +1,7 @@
 {
   "id": "T-A-05",
-  "dir": "/home/isrc5090/149server/tests/ServerA认证/docker关闭时容器接口503",
-  "time": "2026-08-18 10:32:04 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/ServerA认证/docker关闭时容器接口503",
+  "time": "2026-08-18 18:59:01 +0800",
   "passed": true,
   "steps": [
     {

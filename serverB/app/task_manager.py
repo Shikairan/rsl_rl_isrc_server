@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+import logging
 import threading
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -9,6 +10,8 @@ from app.config import Settings
 from app.executor import Executor
 from app.log_store import LogStore
 from app.path_guard import PathGuardError, resolve_script
+
+logger = logging.getLogger(__name__)
 
 
 class TaskConflict(Exception):
@@ -58,6 +61,7 @@ class TaskManager:
         script = resolve_script(self.settings.workspace_root, script_path)
         with self._lock:
             if self._running() is not None:
+                logger.warning("task start conflict script_path=%s", script_path)
                 raise TaskConflict("a task is already running")
             logs = LogStore()
             proc = self.executor.spawn(script, torchrun_args, script_args, logs)
@@ -71,6 +75,7 @@ class TaskManager:
             self._current = task
             self._history[task.task_id] = task
             threading.Thread(target=self._wait, args=(task,), daemon=True).start()
+            logger.info("task start task_id=%s script_path=%s", task.task_id, script_path)
             return task
 
     def _wait(self, task: Task) -> None:
@@ -88,6 +93,12 @@ class TaskManager:
                 task.status = "succeeded"
             else:
                 task.status = "failed"
+            logger.info(
+                "task finished task_id=%s status=%s exit_code=%s",
+                task.task_id,
+                task.status,
+                task.exit_code,
+            )
             task.logs = None
             task.proc = None
 
@@ -115,6 +126,7 @@ class TaskManager:
                 raise TaskNotFound(task_id)
             if task.status != "running":
                 return "stopped"
+            logger.info("task stop task_id=%s", task_id)
             task.stop_requested = True
             proc = task.proc
         if proc is not None:

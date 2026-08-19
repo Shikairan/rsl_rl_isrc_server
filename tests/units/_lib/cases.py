@@ -28,8 +28,9 @@ from common import (
     wait_http,
 )
 
-SB_IMAGE = "rsl_rl_isrc:v3-B"
+SB_IMAGE = "rsl_rl_isrc:v3-C"
 OBS_IMAGE = "rsl_rl_isrc:v3-C"
+LEGACY_IMAGE = "rsl_rl_isrc:v3-B"
 
 
 def execute(case_id: str, case_dir: Path) -> int:
@@ -884,7 +885,7 @@ def t_obs_02(r: CaseRunner) -> None:
     p = docker_cmd(["image", "inspect", OBS_IMAGE, "--format", "{{json .Config.ExposedPorts}}"], timeout=30)
     ok = p.returncode == 0 and "8080/tcp" in p.combined and "15557/tcp" in p.combined
     r.record_cmd(3, p, ok)
-    p = docker_cmd(["run", "--rm", "--entrypoint", "python3", SB_IMAGE, "-c", "import obsserver"], timeout=45)
+    p = docker_cmd(["run", "--rm", "--entrypoint", "python3", LEGACY_IMAGE, "-c", "import obsserver"], timeout=45)
     r.record_cmd(4, p, p.returncode != 0 and "ModuleNotFoundError" in p.combined)
 
 
@@ -956,7 +957,7 @@ def t_obs_05(r: CaseRunner) -> None:
     r.record_cmd(2, p, p.stdout.strip() == "0.05")
     p = docker_cmd(["run", "--rm", "--entrypoint", "printenv", OBS_IMAGE, "OBS_ENABLE"], timeout=30)
     r.record_cmd(3, p, p.returncode == 0 and p.stdout.strip() in {"", "1"})
-    p = docker_cmd(["run", "--rm", "--entrypoint", "printenv", SB_IMAGE, "RSL_RL_ISRC_OBS_RELAY_URL"], timeout=30)
+    p = docker_cmd(["run", "--rm", "--entrypoint", "printenv", LEGACY_IMAGE, "RSL_RL_ISRC_OBS_RELAY_URL"], timeout=30)
     r.record_cmd(4, p, p.stdout.strip() == "")
 
 

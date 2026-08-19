@@ -19,7 +19,7 @@ python3 -m pip install pyzmq pytest   # 若未装
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 进入目录跑 pytest | `cd 149server/obsserver && python3 -m pytest -q` | 退出码 0；至少 4 passed | PASS；退出码 0；输出：.... [100%] 4 passed in 1.79s |
+| 1 | 进入目录跑 pytest | `cd 149server/obsserver && python3 -m pytest -q` | 退出码 0；至少 4 passed | PASS；退出码 0；输出：...... [100%] 6 passed in 1.86s |
 | 2 | （可选）手工 SUB 冒烟 | 终端 A：`PYTHONPATH=src python3 -m obsserver`；终端 B：`curl -X POST http://127.0.0.1:15558/post -H 'content-type: application/json' -d '[[[0,0,1],[0,0,0,1],[0]]]'` | curl 返回 `ok`；SUB 端收到与 POST 相同的 JSON 数组 |  |
 
 ## 通过标准

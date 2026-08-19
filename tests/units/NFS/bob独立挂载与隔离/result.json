@@ -1,7 +1,7 @@
 {
   "id": "T-NFS-03",
-  "dir": "/home/isrc5090/149server/tests/NFS/bob独立挂载与隔离",
-  "time": "2026-08-18 10:31:48 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/NFS/bob独立挂载与隔离",
+  "time": "2026-08-18 18:58:45 +0800",
   "passed": true,
   "steps": [
     {

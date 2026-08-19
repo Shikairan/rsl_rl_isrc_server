@@ -1,4 +1,4 @@
-# T-OBS-07 2026-08-18 16:16:16 +0800
+# T-OBS-07 2026-08-18 19:00:17 +0800
 passed=True
 
 ## step 1 PASS
@@ -7,7 +7,7 @@ PASS；HTTP 200 server_b=10.213.35.42:31000 obs_pub=10.213.35.42:32000 body={"se
 
 ## step 2 PASS
 cmd: POST /login
-PASS；HTTP 200 server_b=10.213.35.42:31000 obs_pub=10.213.35.42:32000 body={"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTc4NzEyNzM3NSwiaWF0IjoxNzg3MDQwOTc1fQ.9QKFl_pbxjij6gdgZGVlr6C92tJ-bInSrGyWdGRQZ58","expires_at":"2026-08-19T08:16:15.200884Z","nfs_host":"10.250.30.115","nfs_export_path":"/mnt/dockerContainer/nfs/alice","server_b_endpoint":"10.213.35.42:31000","obs_pub_endpoint":"10.213.35.42:32000"}
+PASS；HTTP 200 server_b=10.213.35.42:31000 obs_pub=10.213.35.42:32000 body={"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTc4NzEzNzIxNiwiaWF0IjoxNzg3MDUwODE2fQ.tF6eqH2SuVyK4zs6NFvEjPvwOvOoA3rrgl6kgFdH770","expires_at":"2026-08-19T11:00:16.043143Z","nfs_host":"10.250.30.115","nfs_export_path":"/mnt/dockerContainer/nfs/alice","server_b_endpoint":"10.213.35.42:31000","obs_pub_endpoint":"10.213.35.42:32000"}
 
 ## step 3 PASS
 cmd: TCP connect obs_pub_endpoint

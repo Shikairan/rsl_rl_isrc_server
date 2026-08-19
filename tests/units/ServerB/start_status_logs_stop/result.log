@@ -1,17 +1,17 @@
-# T-B-04 2026-08-18 10:33:11 +0800
+# T-B-04 2026-08-18 19:00:26 +0800
 passed=True
 
 ## step 1 PASS
 cmd: POST /tasks/start
-PASS；HTTP 202 body={"task_id":"t-1","status":"running","started_at":"2026-08-18T02:33:06.724296+00:00"}
+PASS；HTTP 202 body={"task_id":"t-1","status":"running","started_at":"2026-08-18T11:00:22.064213+00:00"}
 
 ## step 2 PASS
 cmd: GET /tasks/t-1/status
-PASS；HTTP 轮询结果 {'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T02:33:06.724296+00:00', 'finished_at': '2026-08-18T02:33:11.499279+00:00'}
+PASS；HTTP 轮询结果 {'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:00:22.064213+00:00', 'finished_at': '2026-08-18T11:00:26.450037+00:00'}
 
 ## step 3 PASS
 cmd: GET /tasks/t-1/logs?since=0
-PASS；运行中拿到日志=True body={"next_offset":130,"lines":["rank=0 local_rank=0 device=cuda:0 torch=2.11.0+cu128 cuda=True nproc=1","epoch=1/1 loss=0.822198","wrote /workspace/jobs/last_run.txt"]}
+PASS；运行中拿到日志=True body={"next_offset":130,"lines":["rank=0 local_rank=0 device=cuda:0 torch=2.11.0+cu128 cuda=True nproc=1","epoch=1/1 loss=1.245327","wrote /workspace/jobs/last_run.txt"]}
 
 ## step 4 PASS
 cmd: 结束后 GET /tasks/t-1/logs

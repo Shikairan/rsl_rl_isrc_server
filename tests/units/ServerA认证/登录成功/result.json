@@ -1,7 +1,7 @@
 {
   "id": "T-A-02",
-  "dir": "/home/isrc5090/149server/tests/ServerA认证/登录成功",
-  "time": "2026-08-18 10:31:56 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/ServerA认证/登录成功",
+  "time": "2026-08-18 18:58:53 +0800",
   "passed": true,
   "steps": [
     {
@@ -16,7 +16,7 @@
       "ok": true,
       "cmd": "POST /login alice",
       "returncode": 200,
-      "result": "PASS；HTTP 200 nfs_host=10.250.30.115 nfs_export_path=/mnt/dockerContainer/nfs/alice token=有 expires_at=2026-08-19T02:31:55.883039Z"
+      "result": "PASS；HTTP 200 nfs_host=10.250.30.115 nfs_export_path=/mnt/dockerContainer/nfs/alice token=有 expires_at=2026-08-19T10:58:53.198932Z"
     }
   ]
 }

@@ -1,4 +1,4 @@
-# T-A-02 2026-08-18 10:31:56 +0800
+# T-A-02 2026-08-18 18:58:53 +0800
 passed=True
 
 ## step 1 PASS
@@ -7,4 +7,4 @@ PASS；退出码 0；输出：. [100%] =============================== warnings 
 
 ## step 2 PASS
 cmd: POST /login alice
-PASS；HTTP 200 nfs_host=10.250.30.115 nfs_export_path=/mnt/dockerContainer/nfs/alice token=有 expires_at=2026-08-19T02:31:55.883039Z
+PASS；HTTP 200 nfs_host=10.250.30.115 nfs_export_path=/mnt/dockerContainer/nfs/alice token=有 expires_at=2026-08-19T10:58:53.198932Z

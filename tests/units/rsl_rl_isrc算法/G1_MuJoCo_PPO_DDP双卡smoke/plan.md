@@ -17,7 +17,7 @@ torchrun 双进程：MuJoCo CPU 仿真 + 策略 GPU；2 iteration 跑完。
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 双卡 DDP smoke | `docker run --rm --gpus 2 --shm-size=16g --ipc=host -w /opt/rsl_rl_isrc rsl_rl_isrc:v3 torchrun --standalone --nnodes=1 --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 16 --max-iterations 2 --no-zmq-obs` | 退出码 0；日志含 world_size=2、total_envs=32、sim_device=cpu、policy_device=cuda:0；出现 Learning iteration 0/2 与 1/2；无 NCCL 崩溃 | PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.9 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_feat… |
+| 1 | 双卡 DDP smoke | `docker run --rm --gpus 2 --shm-size=16g --ipc=host -w /opt/rsl_rl_isrc rsl_rl_isrc:v3 torchrun --standalone --nnodes=1 --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 16 --max-iterations 2 --no-zmq-obs` | 退出码 0；日志含 world_size=2、total_envs=32、sim_device=cpu、policy_device=cuda:0；出现 Learning iteration 0/2 与 1/2；无 NCCL 崩溃 | PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.12 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_fea… |
 
 ## 通过标准
 

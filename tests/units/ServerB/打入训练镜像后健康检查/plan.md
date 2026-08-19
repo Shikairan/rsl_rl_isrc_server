@@ -17,7 +17,7 @@
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 启动新镜像 | `docker run -d --name sb-v3 --rm -p 18080:8080 rsl_rl_isrc:v3-sb` | running | PASS；退出码 0；health_ready=True；输出：de10a72f0a133c0958be068e41b9696421df31e6ef6f35746e8a4f676eef3cef |
+| 1 | 启动新镜像 | `docker run -d --name sb-v3 --rm -p 18080:8080 rsl_rl_isrc:v3-sb` | running | PASS；退出码 0；health_ready=True；输出：230450e62334f39579039f55330757088d2f95741308868e166b6ecedc1a313c |
 | 2 | health | `curl -sS http://127.0.0.1:18080/health` | {"status":"ok"} | PASS；HTTP 200 body={"status":"ok"} |
 | 3 | 确认 torchrun 仍在 | `docker exec sb-v3 bash -lc 'command -v torchrun && python -c "import torch;print(torch.__version__)"'` | torchrun 存在；torch 仍为 2.11.0+cu128 | PASS；退出码 0；输出：/usr/local/bin/torchrun 2.11.0+cu128 |
 | 4 | 清理 | `docker stop sb-v3` | 退出 | PASS；退出码 0；输出：sb-v3 |

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, HTTPException, Request
 
 from app.auth import AuthError, authenticate, issue_token
 from app.schemas import ErrorResponse, LoginRequest, LoginResponse
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -18,6 +21,7 @@ def login(body: LoginRequest, request: Request) -> LoginResponse:
     try:
         user = authenticate(settings, body.username, body.password)
     except AuthError:
+        logger.warning("login failed username=%s", body.username)
         raise HTTPException(status_code=401, detail={"error": "invalid credentials"}) from None
     token, expires_at = issue_token(settings, body.username)
     endpoint = None
@@ -25,6 +29,7 @@ def login(body: LoginRequest, request: Request) -> LoginResponse:
     svc = getattr(request.app.state, "containers", None)
     if svc is not None and settings.server.docker.enabled:
         endpoint, obs_endpoint = svc.running_endpoints(body.username)
+    logger.info("login ok username=%s", body.username)
     return LoginResponse(
         token=token,
         expires_at=expires_at,

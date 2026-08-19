@@ -1,7 +1,7 @@
 {
   "id": "T-B-03",
-  "dir": "/home/isrc5090/149server/tests/ServerB/单任务锁",
-  "time": "2026-08-18 10:33:05 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/ServerB/单任务锁",
+  "time": "2026-08-18 19:00:21 +0800",
   "passed": true,
   "steps": [
     {
@@ -9,7 +9,7 @@
       "ok": true,
       "cmd": "POST /tasks/start 长任务",
       "returncode": 202,
-      "result": "PASS；HTTP 202 body={\"task_id\":\"t-1\",\"status\":\"running\",\"started_at\":\"2026-08-18T02:33:05.430155+00:00\"}"
+      "result": "PASS；HTTP 202 body={\"task_id\":\"t-1\",\"status\":\"running\",\"started_at\":\"2026-08-18T11:00:20.742306+00:00\"}"
     },
     {
       "step": 2,

@@ -1,7 +1,7 @@
 {
   "id": "I-04",
   "dir": "/home/isrc5090/149server/tests/integration/I-04-bob隔离",
-  "time": "2026-08-18 11:14:38 +0800",
+  "time": "2026-08-18 19:02:04 +0800",
   "passed": true,
   "steps": [
     {
@@ -9,42 +9,42 @@
       "ok": true,
       "cmd": "tee alice_only.txt / bob_only.txt",
       "returncode": 0,
-      "result": "PASS；alice ls=alice_only.txt jobs mount_test.txt rsl_rl_isrc wheels；bob ls=bob_only.txt"
+      "result": "PASS；alice ls=alice_only.txt jobs logs mount_test.txt rsl_rl_isrc wheels；bob ls=bob_only.txt jobs logs"
     },
     {
       "step": 2,
       "ok": true,
       "cmd": "POST /containers/start alice",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
     },
     {
       "step": 3,
       "ok": true,
       "cmd": "POST /containers/start bob",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31001 (alice=10.213.35.42:31000) body={'server_b_endpoint': '10.213.35.42:31001', 'container_status': 'running', 'container_name': 'runner-bob', 'nfs_mount_path': '/workspace'}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31001 (alice=10.213.35.42:31000) body={'server_b_endpoint': '10.213.35.42:31001', 'obs_pub_endpoint': '10.213.35.42:32001', 'container_status': 'running', 'container_name': 'runner-bob', 'nfs_mount_path': '/workspace'}"
     },
     {
       "step": 4,
       "ok": true,
       "cmd": "docker exec runner-alice ls / isolation",
       "returncode": 0,
-      "result": "PASS；ls=alice_only.txt jobs mount_test.txt rsl_rl_isrc wheels iso=isolated"
+      "result": "PASS；ls=alice_only.txt jobs logs mount_test.txt rsl_rl_isrc wheels iso=isolated"
     },
     {
       "step": 5,
       "ok": true,
       "cmd": "docker exec runner-bob ls / isolation",
       "returncode": 0,
-      "result": "PASS；ls=bob_only.txt iso=isolated"
+      "result": "PASS；ls=bob_only.txt jobs logs iso=isolated"
     },
     {
       "step": 6,
       "ok": true,
       "cmd": "POST /containers/stop alice token",
       "returncode": 200,
-      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}；runner-bob=runner-bob Up 2 seconds"
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}；runner-bob=runner-bob Up 3 seconds"
     },
     {
       "step": 7,

@@ -38,3 +38,5 @@ docker build -f serverB/Dockerfile.v3-C -t rsl_rl_isrc:v3-C .
 ```
 
 入口脚本会后台拉起转发（挂了再拉），再起 Server B。`OBS_ENABLE=0` 可关掉转发。
+
+进程日志写到与 Server B 同一目录：`/workspace/logs/obsserver.log`（用户 NFS）。**不记录画面帧 JSON。** 环境变量 `OBS_LOG_DIR`（默认 `/workspace/logs`）、`OBS_LOG_ENABLED`。已在跑的容器需 stop 再 start。

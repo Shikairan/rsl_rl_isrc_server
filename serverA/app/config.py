@@ -21,6 +21,16 @@ class FeatureFlag(BaseModel):
     enabled: bool = False
 
 
+class LoggingSettings(BaseModel):
+    enabled: bool = True
+    dir: str = "./logs"
+    level: str = "INFO"
+    console: bool = True
+    access_log: bool = True
+    max_bytes: int = 10_485_760
+    backup_count: int = 5
+
+
 class ServerSettings(BaseModel):
     host: str = "0.0.0.0"
     port: int = 8000
@@ -36,6 +46,7 @@ class ServerSettings(BaseModel):
     reconcile_interval_sec: int = 30
     nfs: FeatureFlag = Field(default_factory=FeatureFlag)
     docker: FeatureFlag = Field(default_factory=FeatureFlag)
+    logging: LoggingSettings = Field(default_factory=LoggingSettings)
 
     # obs 转发端口与训练侧中继 URL（注入到容器环境变量）
     obs_container_port: int = 15557
@@ -62,6 +73,14 @@ class Settings:
     @property
     def db_path(self) -> Path:
         raw = os.environ.get("SERVER_A_DB_PATH", self.server.db_path)
+        path = Path(raw)
+        if not path.is_absolute():
+            path = ROOT / path
+        return path
+
+    @property
+    def log_dir(self) -> Path:
+        raw = os.environ.get("SERVER_A_LOG_DIR", self.server.logging.dir)
         path = Path(raw)
         if not path.is_absolute():
             path = ROOT / path
@@ -96,6 +115,10 @@ def load_settings(
     server = ServerSettings.model_validate(server_raw)
     server.nfs.enabled = _env_flag("SERVER_A_NFS_ENABLED", server.nfs.enabled)
     server.docker.enabled = _env_flag("SERVER_A_DOCKER_ENABLED", server.docker.enabled)
+    server.logging.enabled = _env_flag("SERVER_A_LOG_ENABLED", server.logging.enabled)
+    level_override = os.environ.get("SERVER_A_LOG_LEVEL")
+    if level_override and level_override.strip():
+        server.logging.level = level_override.strip().upper()
     users = {
         name: UserRecord.model_validate(body)
         for name, body in users_raw.items()

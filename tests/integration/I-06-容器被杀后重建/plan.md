@@ -26,10 +26,10 @@ TOKEN=$(curl -sS -X POST $A/login -H 'content-type: application/json' \
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | start | `curl -sS -X POST $A/containers/start -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' -d '{"image":"rsl_rl_isrc:v3-B","gpu_count":0}'` | HTTP 200；记下旧 `server_b_endpoint` | PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'} |
+| 1 | start | `curl -sS -X POST $A/containers/start -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' -d '{"image":"rsl_rl_isrc:v3-B","gpu_count":0}'` | HTTP 200；记下旧 `server_b_endpoint` | PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'} |
 | 2 | 外部杀掉容器 | `sg docker -c 'docker rm -f runner-alice'` | 容器消失；`docker ps` 无 `runner-alice` | PASS；退出码 0；docker=无；输出：runner-alice |
 | 3 | current | `curl -sS -o /tmp/i06cur.json -w '%{http_code}' -H "Authorization: Bearer $TOKEN" $A/containers/current` | 非 200（无可用 running 容器，例如 404） | PASS；HTTP 404 body={"detail":{"error":"no container"}} |
-| 4 | 再 start | 命令同步骤 1 | HTTP 200；`container_name=runner-alice`；`container_status=running`；endpoint 可用（端口可与步骤 1 不同） | PASS；HTTP 200 old=10.213.35.42:31000 new=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'} |
+| 4 | 再 start | 命令同步骤 1 | HTTP 200；`container_name=runner-alice`；`container_status=running`；endpoint 可用（端口可与步骤 1 不同） | PASS；HTTP 200 old=10.213.35.42:31000 new=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'} |
 | 5 | 新 endpoint 探活 | `curl -sS http://$NEW_EP/health` | HTTP 200 | PASS；HTTP 200 body={"status":"ok"} |
 | 6 | 停干净 | `curl -sS -X POST $A/containers/stop -H "Authorization: Bearer $TOKEN"` | HTTP 200；无 `runner-alice` | PASS；HTTP 200 body={"status":"stopped"} docker=无 |
 

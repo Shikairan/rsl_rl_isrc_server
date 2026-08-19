@@ -1,7 +1,7 @@
 {
   "id": "T-A-08",
-  "dir": "/home/isrc5090/149server/tests/容器API/健康检查失败回收_mock",
-  "time": "2026-08-18 10:32:07 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/容器API/健康检查失败回收_mock",
+  "time": "2026-08-18 18:59:04 +0800",
   "passed": true,
   "steps": [
     {

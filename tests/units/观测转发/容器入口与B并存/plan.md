@@ -17,9 +17,9 @@
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 后台起容器 | `sg docker -c 'docker run -d --name obs-entry --rm -p 127.0.0.1:18080:8080 -p 127.0.0.1:15557:15557 rsl_rl_isrc:v3-C'` | 返回 container id；inspect running | PASS；退出码 0；health_ready=True；输出：c79bdf67ad068a296633d18c9d4ea09cb4fc3046830655c0c92f85be45c7e7dd |
+| 1 | 后台起容器 | `sg docker -c 'docker run -d --name obs-entry --rm -p 127.0.0.1:18080:8080 -p 127.0.0.1:15557:15557 rsl_rl_isrc:v3-C'` | 返回 container id；inspect running | PASS；退出码 0；health_ready=True；输出：232ffad5c1dd54f4838057d69e2fdde941baefebf91c0f6915992766e633261f |
 | 2 | Server B 健康 | `curl -sS -m 3 http://127.0.0.1:18080/health` | `{"status":"ok"}` | PASS；HTTP 200 body={"status":"ok"} |
-| 3 | 转发日志 | `sg docker -c 'docker logs obs-entry 2>&1 \| tail -5'` | 含 `obsserver http://127.0.0.1:15558/post -> pub tcp://0.0.0.0:15557` | PASS；退出码 0；输出：INFO: 172.17.0.1:46866 - "GET /health HTTP/1.1" 200 OK INFO: 172.17.0.1:46868 - "GET /health HTTP/1.1" 200 OK INFO: 172.17.0.1:46876 - "GET /health HTTP/1.1" 200 OK 2026-08-18 07:41:28,666 INFO obsserver: obsserver http://127.0.0.1:15558/post -> pub tcp://0.0.0.0:15557 INFO: Started server process [1] INFO: Waiting for application startup. INFO: Application… |
+| 3 | 转发日志 | `sg docker -c 'docker logs obs-entry 2>&1 \| tail -5'` | 含 `obsserver http://127.0.0.1:15558/post -> pub tcp://0.0.0.0:15557` | PASS；退出码 0；输出：2026-08-18 10:59:59,471 INFO obsserver: logging ready dir=/workspace/logs 2026-08-18 10:59:59,473 INFO obsserver: obsserver http://127.0.0.1:15558/post -> pub tcp://0.0.0.0:15557 2026-08-18 10:59:59,509 INFO server_b: logging ready dir=/workspace/logs level=INFO access=True 2026-08-18 10:59:59,744 INFO uvicorn.error: Started server process [1] 2026-08-18 10… |
 | 4 | 画面口 TCP | `python3 -c "import socket;s=socket.create_connection(('127.0.0.1',15557),2);s.close();print('ok')"` | 打印 ok（无 SUB 数据也正常） | PASS；退出码 0；输出：ok |
 | 5 | 清理 | `sg docker -c 'docker stop obs-entry'` | 容器退出 | PASS；退出码 0；输出：obs-entry |
 

@@ -12,7 +12,7 @@ OBS_IMAGE = "rsl_rl_isrc:v3-C"
 def main() -> int:
     runner = CaseRunner("T-OBS-07", Path(__file__).resolve().parent)
     docker_cmd(["rm", "-f", "runner-alice"])
-    srv = ServerA(docker=True, port=8017)
+    srv = ServerA(docker=True, port=18017)
     token = ""
     try:
         srv.start()

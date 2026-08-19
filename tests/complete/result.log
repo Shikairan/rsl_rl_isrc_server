@@ -1,4 +1,4 @@
-# C-FULL 2026-08-18 16:43:08 +0800
+# C-FULL 2026-08-18 19:03:15 +0800
 passed=True
 
 ## step 1 PASS
@@ -19,7 +19,7 @@ PASS；HTTP 401 body={"detail":{"error":"missing token"}}
 
 ## step 5 PASS
 cmd: showmount -e 10.250.30.115
-PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8
+PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/frank 10.0.0.0/8 /mnt/dockerContainer/nfs/eve 10.0.0.0/8 /mnt/dockerContainer/nfs/dave 10.0.0.0/8 /mnt/dockerContainer/nfs/carol 10.0.0.0/8 /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8
 
 ## step 6 PASS
 cmd: findmnt /mnt/nfs/alice
@@ -43,7 +43,7 @@ PASS；退出码 0；输出：ping
 
 ## step 11 PASS
 cmd: sg docker -c 'docker image inspect rsl_rl_isrc:v3-C --format '"'"'{{.Id}} {{json .Config.Entrypoint}} {{json .Config.ExposedPorts}}'"'"''
-PASS；退出码 0；须为 v3-C（含 Server B + obsserver）；输出：sha256:7e3e1f8913ef8ab409ba3a4069a07b686d83394b4d1567c722074031bce7fcae ["/opt/serverB/entrypoint.sh"] {"15557/tcp":{},"8080/tcp":{}}
+PASS；退出码 0；须为 v3-C（含 Server B + obsserver）；输出：sha256:e9fc49b4adc47eee0e385ca4ba071d3d0edd7b93125a7914afab8859ecebbce1 ["/opt/serverB/entrypoint.sh"] {"15557/tcp":{},"8080/tcp":{}}
 
 ## step 12 PASS
 cmd: nvidia-smi -L
@@ -95,11 +95,11 @@ PASS；HTTP 400 body={"detail":{"error":"script_path must be relative to workspa
 
 ## step 24 PASS
 cmd: POST /tasks/start jobs/complete_obs_smoke.py（开 ZMQ obs，无 --no-zmq-obs）
-PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T08:42:59.647863+00:00'} obs_pub=10.213.35.42:32000
+PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T11:03:06.405285+00:00'} obs_pub=10.213.35.42:32000
 
 ## step 25 PASS
 cmd: GET /tasks/t-1/logs?since=0（running 期间采集）
-PASS；W0818 08:43:00.767000 72 torch/distributed/run.py:851] W0818 08:43:00.767000 72 torch/distributed/run.py:851] ***************************************** W0818 08:43:00.767000 72 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variabl…
+PASS；W0818 11:03:07.540000 75 torch/distributed/run.py:851] W0818 11:03:07.540000 75 torch/distributed/run.py:851] ***************************************** W0818 11:03:07.540000 75 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variabl…
 
 ## step 26 PASS
 cmd: POST /tasks/start 第二次
@@ -107,7 +107,7 @@ PASS；HTTP 409 body={"detail":{"error":"a task is already running"}}
 
 ## step 27 PASS
 cmd: GET /tasks/t-1/status 轮询
-PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:42:59.647863+00:00', 'finished_at': '2026-08-18T08:43:06.669554+00:00'}
+PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:03:06.405285+00:00', 'finished_at': '2026-08-18T11:03:13.539346+00:00'}
 
 ## step 28 PASS
 cmd: SUB 10.213.35.42:32000 收画面帧
@@ -115,7 +115,7 @@ PASS；n_frames=24 head=[[[[0.8647451400756836, 0.3887401521205902, 0.7984024286
 
 ## step 29 PASS
 cmd: GET /tasks/t-1/status 终态
-PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:42:59.647863+00:00', 'finished_at': '2026-08-18T08:43:06.669554+00:00'}
+PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:03:06.405285+00:00', 'finished_at': '2026-08-18T11:03:13.539346+00:00'}
 
 ## step 30 PASS
 cmd: cat /mnt/nfs/alice/jobs/last_run.txt

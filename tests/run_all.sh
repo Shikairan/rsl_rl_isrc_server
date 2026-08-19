@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -u
-ROOT=/home/isrc5090/149server/tests
+ROOT=/home/isrc5090/149server/tests/units
 fail=0
 echo "===== T-NFS-01 NFS/导出列表可见 ====="
 python3 "$ROOT/NFS/导出列表可见/run.py" || fail=1

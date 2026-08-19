@@ -1,9 +1,9 @@
-# T-OBS-04 2026-08-18 15:41:36 +0800
+# T-OBS-04 2026-08-18 19:00:02 +0800
 passed=True
 
 ## step 1 PASS
 cmd: sg docker -c 'docker run -d --name obs-pub --rm -p 127.0.0.1:18080:8080 -p 127.0.0.1:15557:15557 rsl_rl_isrc:v3-C'
-PASS；退出码 0；health_ready=True；输出：8ee5ea7da5aeb25ba132c490ad7e0d625523273c384d4d3f73e39bd11a3f0142
+PASS；退出码 0；health_ready=True；输出：0acdc77e763a58b069e80b2e64092318e8370faa3e1fa60af83a27f67d019b4f
 
 ## step 2 PASS
 cmd: python3 -c 'import json, subprocess, zmq; payload='"'"'[[[0.1, 0.2, 0.9], [0.0, 0.0, 0.0, 1.0], [0.5, -0.3]]]'"'"'; ctx=zmq.Context(); s=ctx.socket(zmq.SUB); s.setsockopt(zmq.SUBSCRIBE, b'"'"''"'"'); s.setsockopt(zmq.RCVTIMEO, 5000); s.connect('"'"'tcp://127.0.0.1:15557'"'"'); subprocess.run(['"'"'sg'"'"','"'"'docker'"'"','"'"'-c'"'"','"'"'docker exec obs-pub python3 -c "import json,urllib.request; req=urllib.request.Request(\'"'"'http://127.0.0.1:15558/post\'"'"', data=json.dumps(json.loads(\'"'"'[[[0.1, 0.2, 0.9], [0.0, 0.0, 0.0, 1.0], [0.5, -0.3]]]\'"'"')).encode(), headers={\'"'"'Content-Type\'"'"':\'"'"'application/json\'"'"'}, method=\'"'"'POST\'"'"'); print(urllib.request.urlopen(req, timeout=3).read().decode())"'"'"'], check=True); msg=json.loads(s.recv().decode()); print(json.dumps(msg, ensure_ascii=False))'

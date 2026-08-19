@@ -1,7 +1,7 @@
 {
   "id": "I-OBS-04",
   "dir": "/home/isrc5090/149server/tests/integration/I-OBS-04-alice与bob画面隔离",
-  "time": "2026-08-18 16:35:40 +0800",
+  "time": "2026-08-18 19:02:30 +0800",
   "passed": true,
   "steps": [
     {

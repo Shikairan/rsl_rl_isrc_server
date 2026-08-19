@@ -1,7 +1,7 @@
 {
   "id": "T-NFS-04",
-  "dir": "/home/isrc5090/149server/tests/NFS/卸载后重挂alice",
-  "time": "2026-08-18 10:31:48 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/NFS/卸载后重挂alice",
+  "time": "2026-08-18 18:58:45 +0800",
   "passed": true,
   "steps": [
     {
@@ -30,7 +30,7 @@
       "ok": true,
       "cmd": "ls /mnt/nfs/alice/jobs",
       "returncode": 0,
-      "result": "PASS；退出码 0；输出：from_container.txt last_run.txt nfs_rw.txt train.py"
+      "result": "PASS；退出码 0；输出：complete_obs_frames.json complete_obs_smoke.py complete_probe.txt from_container.txt g1_ddp4.py last_ddp4.txt last_run.txt nfs_rw.txt obs_iobs02_smoke.py obs_iobs03_smoke.py obs_iobs04_alice.py train.py"
     }
   ]
 }

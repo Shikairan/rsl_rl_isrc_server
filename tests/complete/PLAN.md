@@ -101,7 +101,7 @@ echo "token_len=${#TOKEN}"
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 2.1 | 115 导出列表 | `showmount -e 10.250.30.115` | 出现 `/mnt/dockerContainer/nfs`、`.../alice` | PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8 |
+| 2.1 | 115 导出列表 | `showmount -e 10.250.30.115` | 出现 `/mnt/dockerContainer/nfs`、`.../alice` | PASS；退出码 0；输出：Export list for 10.250.30.115: /mnt/dockerContainer/nfs/frank 10.0.0.0/8 /mnt/dockerContainer/nfs/eve 10.0.0.0/8 /mnt/dockerContainer/nfs/dave 10.0.0.0/8 /mnt/dockerContainer/nfs/carol 10.0.0.0/8 /mnt/dockerContainer/nfs/bob 10.0.0.0/8 /mnt/dockerContainer/nfs/alice 10.0.0.0/8 /mnt/dockerContainer/nfs 10.0.0.0/8 |
 | 2.2 | 本机是否已挂 | `findmnt /mnt/nfs/alice` | 若已挂：SOURCE 为 `10.250.30.115:/mnt/dockerContainer/nfs/alice`，fstype nfs | PASS；退出码 0；输出：TARGET SOURCE FSTYPE OPTIONS /mnt/nfs/alice 10.250.30.115:/mnt/dockerContainer/nfs/alice nfs4 rw,relatime,vers=4.2,rsize=1048576,wsize=1048576,namlen=255,hard,fatal_neterrors=none,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=10.213.35.42,local_lock=none,addr=10.250.30.115 |
 | 2.3 | 未挂则挂上 | `sudo mkdir -p /mnt/nfs/alice`；`sudo mount -t nfs -o vers=4,clientaddr=10.213.35.42 10.250.30.115:/mnt/dockerContainer/nfs/alice /mnt/nfs/alice` | `findmnt` 源仍是 115 | PASS；已挂载，未重复执行 mount |
 | 2.4 | 本机可读工作区 | `ls /mnt/nfs/alice/jobs/train.py` | 文件存在 | PASS；退出码 0；输出：/mnt/nfs/alice/jobs/train.py |
@@ -116,7 +116,7 @@ echo "token_len=${#TOKEN}"
 |------|------|------|------|----------|
 | 3.1 | 本机 NFS 可写回 | `echo ping \| sudo tee /mnt/nfs/alice/jobs/complete_probe.txt`；本机 `cat /mnt/nfs/alice/jobs/complete_probe.txt` | 内容为 `ping` | PASS；退出码 0；本机 cat='ping'；输出：ping |
 | 3.2 | 115 侧可见同一文件 | 115 上 `cat /mnt/dockerContainer/nfs/alice/jobs/complete_probe.txt` | 内容为 `ping` | PASS；退出码 0；输出：ping |
-| 3.3 | 训练镜像在本地 | `sg docker -c 'docker image inspect rsl_rl_isrc:v3-C --format "{{.Id}} {{.Config.Entrypoint}}"'` | 镜像存在；Entrypoint 会起 Server B；ExposedPorts 含 `15557`（不要用无 obs 的 `v3-B`） | PASS；退出码 0；须为 v3-C（含 Server B + obsserver）；输出：sha256:7e3e1f8913ef8ab409ba3a4069a07b686d83394b4d1567c722074031bce7fcae ["/opt/serverB/entrypoint.sh"] {"15557/tcp":{},"8080/tcp":{}} |
+| 3.3 | 训练镜像在本地 | `sg docker -c 'docker image inspect rsl_rl_isrc:v3-C --format "{{.Id}} {{.Config.Entrypoint}}"'` | 镜像存在；Entrypoint 会起 Server B；ExposedPorts 含 `15557`（不要用无 obs 的 `v3-B`） | PASS；退出码 0；须为 v3-C（含 Server B + obsserver）；输出：sha256:e9fc49b4adc47eee0e385ca4ba071d3d0edd7b93125a7914afab8859ecebbce1 ["/opt/serverB/entrypoint.sh"] {"15557/tcp":{},"8080/tcp":{}} |
 | 3.4 | GPU 可见 | `nvidia-smi -L` | 至少 1 张卡 | PASS；退出码 0；输出：GPU 0: NVIDIA GeForce RTX 5090 (UUID: GPU-8f3532a7-6994-9d8d-7ab2-962e3e4fd2cd) GPU 1: NVIDIA GeForce RTX 5090 (UUID: GPU-54dacabd-569b-f97a-b07c-52917620e8fd) GPU 2: NVIDIA GeForce RTX 5090 (UUID: GPU-6f1ae41a-8a1b-cb4d-78e6-ee6cca10242b) GPU 3: NVIDIA GeForce RTX 5090 (UUID: GPU-4469f8e3-945d-5f0c-6e16-b18fd0e6c257) GPU 4: NVIDIA GeForce RTX 5090 (UUID: G… |
 | 3.5 | 无残留容器 | `sg docker -c 'docker ps -a --filter name=runner-alice --format "{{.Names}} {{.Status}}"'` | 无 `runner-alice`，或先 `POST /containers/stop` | PASS；无 runner-alice |
 | 3.6 | 工作区脚本 | `head -n 5 /mnt/nfs/alice/jobs/train.py` | 可读取；后续 `script_path` 用相对路径 `jobs/train.py` | PASS；退出码 0；输出：#!/usr/bin/env python3 """Tiny PyTorch job for NFS + torchrun smoke test. Uses CUDA when the installed wheel supports this GPU; otherwise CPU. local/torchrun:0.01 ships torch 2.4.1 (max sm_90) which cannot run RTX 5090 (sm_120). |
@@ -157,7 +157,7 @@ echo "EP=$EP"
 |------|------|------|------|----------|
 | 5.1 | 越界路径应拒绝 | `curl -sS -o /tmp/c-esc.json -w '%{http_code}' -X POST http://$EP/tasks/start -H 'content-type: application/json' -d '{"script_path":"../etc/passwd","torchrun_args":["--standalone"],"script_args":[]}'` | HTTP 400；`script_path escapes workspace` | PASS；HTTP 400 body={"detail":{"error":"script_path escapes workspace"}} |
 | 5.2 | 绝对路径应拒绝 | `curl -sS -o /tmp/c-abs.json -w '%{http_code}' -X POST http://$EP/tasks/start -H 'content-type: application/json' -d '{"script_path":"/etc/passwd","torchrun_args":["--standalone"],"script_args":[]}'` | HTTP 400；`script_path must be relative to workspace` | PASS；HTTP 400 body={"detail":{"error":"script_path must be relative to workspace"}} |
-| 5.3 | start 训练（开 obs） | `curl -sS -X POST http://$EP/tasks/start -H 'content-type: application/json' -d '{"script_path":"jobs/complete_obs_smoke.py","torchrun_args":["--nproc_per_node","2","--standalone"],"script_args":[]}'` | HTTP 202；`status=running`；返回 `task_id` | PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T08:42:59.647863+00:00'} obs_pub=10.213.35.42:32000 |
+| 5.3 | start 训练（开 obs） | `curl -sS -X POST http://$EP/tasks/start -H 'content-type: application/json' -d '{"script_path":"jobs/complete_obs_smoke.py","torchrun_args":["--nproc_per_node","2","--standalone"],"script_args":[]}'` | HTTP 202；`status=running`；返回 `task_id` | PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T11:03:06.405285+00:00'} obs_pub=10.213.35.42:32000 |
 
 ```bash
 TID=$(curl -sS -X POST http://$EP/tasks/start -H 'content-type: application/json' \
@@ -174,9 +174,9 @@ echo "TID=$TID"
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 6.1 | 运行中拉 logs | `curl -sS "http://$EP/tasks/$TID/logs?since=0"` | HTTP 200；`lines` 非空（含 rank / iteration / cuda）。已结束后再查可能 404 `logs released` | PASS；W0818 08:43:00.767000 72 torch/distributed/run.py:851] W0818 08:43:00.767000 72 torch/distributed/run.py:851] ***************************************** W0818 08:43:00.767000 72 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variabl… |
+| 6.1 | 运行中拉 logs | `curl -sS "http://$EP/tasks/$TID/logs?since=0"` | HTTP 200；`lines` 非空（含 rank / iteration / cuda）。已结束后再查可能 404 `logs released` | PASS；W0818 11:03:07.540000 75 torch/distributed/run.py:851] W0818 11:03:07.540000 75 torch/distributed/run.py:851] ***************************************** W0818 11:03:07.540000 75 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variabl… |
 | 6.2 | 第二任务应 409 | （仍 running 时）再 POST 一次 `/tasks/start` | HTTP 409；`a task is already running` | PASS；HTTP 409 body={"detail":{"error":"a task is already running"}} |
-| 6.3 | 轮询 status | `curl -sS http://$EP/tasks/$TID/status`（间隔约 1s 直到终态） | 最终 `status=succeeded`；`exit_code=0` | PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:42:59.647863+00:00', 'finished_at': '2026-08-18T08:43:06.669554+00:00'} |
+| 6.3 | 轮询 status | `curl -sS http://$EP/tasks/$TID/status`（间隔约 1s 直到终态） | 最终 `status=succeeded`；`exit_code=0` | PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:03:06.405285+00:00', 'finished_at': '2026-08-18T11:03:13.539346+00:00'} |
 | 6.4 | SUB 画面口出帧 | 宿主机 SUB `tcp://$OBS_EP` | 至少 1 帧 JSON 数组；元素为 `[位置,姿态,关节]`；终端打印 `======== OBS 画面帧 ========` | PASS；n_frames=24 head=[[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.026255184784531593, 0.08008196949958801, 0.07164422422647476, 0.04263… |
 
 轮询示例：
@@ -197,7 +197,7 @@ done
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 7.1 | 终态 | `curl -sS http://$EP/tasks/$TID/status` | `succeeded`；`exit_code=0`；有 `finished_at` | PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:42:59.647863+00:00', 'finished_at': '2026-08-18T08:43:06.669554+00:00'} |
+| 7.1 | 终态 | `curl -sS http://$EP/tasks/$TID/status` | `succeeded`；`exit_code=0`；有 `finished_at` | PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:03:06.405285+00:00', 'finished_at': '2026-08-18T11:03:13.539346+00:00'} |
 | 7.2 | 本机 NFS 产物 | `cat /mnt/nfs/alice/jobs/last_run.txt` | 含 `device=cuda:0`、`torch=2.11.0+cu128`、`loss=` | PASS；退出码 0；输出：finished_at=complete-obs-smoke device=cuda:0 torch=2.11.0+cu128 loss=obs |
 | 7.3 | 115 同一份文件 | 115 上 `cat /mnt/dockerContainer/nfs/alice/jobs/last_run.txt` | 与本机内容一致 | PASS；退出码 0；本机=finished_at=complete-obs-smoke device=cuda:0 torch=2.11.0+cu128 loss=obs；输出：finished_at=complete-obs-smoke device=cuda:0 torch=2.11.0+cu128 loss=obs |
 | 7.4 | 本机 obs 帧文件 | `cat /mnt/nfs/alice/jobs/complete_obs_frames.json` | `n_frames>0`；含 `obs_pub_endpoint` 与 `frames` | PASS；退出码 0；n_frames=24 obs_pub=10.213.35.42:32000；输出：{ "obs_pub_endpoint": "10.213.35.42:32000", "n_frames": 24, "frames": [ [ [ [ 0.8647451400756836, 0.3887401521205902, 0.7984024286270142 ], [ -0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464 ], [ -0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.02105627581477… |

@@ -1,7 +1,7 @@
 {
   "id": "I-02",
   "dir": "/home/isrc5090/149server/tests/integration/I-02-start幂等与current",
-  "time": "2026-08-18 11:12:54 +0800",
+  "time": "2026-08-18 19:01:08 +0800",
   "passed": true,
   "steps": [
     {
@@ -9,21 +9,21 @@
       "ok": true,
       "cmd": "POST /containers/start #1",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
     },
     {
       "step": 2,
       "ok": true,
       "cmd": "POST /containers/start #2 幂等",
       "returncode": 200,
-      "result": "PASS；HTTP 200 ep1=10.213.35.42:31000 ep2=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
+      "result": "PASS；HTTP 200 ep1=10.213.35.42:31000 ep2=10.213.35.42:31000 body={'server_b_endpoint': '10.213.35.42:31000', 'obs_pub_endpoint': '10.213.35.42:32000', 'container_status': 'running', 'container_name': 'runner-alice', 'nfs_mount_path': '/workspace'}"
     },
     {
       "step": 3,
       "ok": true,
       "cmd": "GET /containers/current",
       "returncode": 200,
-      "result": "PASS；HTTP 200 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
+      "result": "PASS；HTTP 200 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
     },
     {
       "step": 4,

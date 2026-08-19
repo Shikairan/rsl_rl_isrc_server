@@ -1,7 +1,7 @@
 {
   "id": "T-D-02",
-  "dir": "/home/isrc5090/149server/tests/Docker绑定NFS/容器写回NFS",
-  "time": "2026-08-18 10:32:17 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/Docker绑定NFS/容器写回NFS",
+  "time": "2026-08-18 18:59:14 +0800",
   "passed": true,
   "steps": [
     {

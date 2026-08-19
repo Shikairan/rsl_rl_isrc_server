@@ -1,4 +1,4 @@
-# T-NFS-04 2026-08-18 10:31:48 +0800
+# T-NFS-04 2026-08-18 18:58:45 +0800
 passed=True
 
 ## step 1 PASS
@@ -15,4 +15,4 @@ PASS；退出码 0；输出：10.250.30.115:/mnt/dockerContainer/nfs/alice nfs4
 
 ## step 4 PASS
 cmd: ls /mnt/nfs/alice/jobs
-PASS；退出码 0；输出：from_container.txt last_run.txt nfs_rw.txt train.py
+PASS；退出码 0；输出：complete_obs_frames.json complete_obs_smoke.py complete_probe.txt from_container.txt g1_ddp4.py last_ddp4.txt last_run.txt nfs_rw.txt obs_iobs02_smoke.py obs_iobs03_smoke.py obs_iobs04_alice.py train.py

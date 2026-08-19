@@ -1,4 +1,4 @@
-# I-OBS-01 2026-08-18 16:34:14 +0800
+# I-OBS-01 2026-08-18 19:01:20 +0800
 passed=True
 
 ## step 1 PASS
@@ -11,7 +11,7 @@ PASS；HTTP 200 body={"server_b_endpoint":"10.213.35.42:31000","obs_pub_endpoint
 
 ## step 3 PASS
 cmd: POST /login alice
-PASS；HTTP 200 body={"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTc4NzEyODQ1MywiaWF0IjoxNzg3MDQyMDUzfQ.MUkkvI0MWPm8GEDrbhOG7M7SFDxZILtAw074M2UDZ4k", "expires_at": "2026-08-19T08:34:13.695644Z", "nfs_host": "10.250.30.115", "nfs_export_path": "/mnt/dockerContainer/nfs/alice", "server_b_endpoint": "10.213.35.42:31000", "obs_pub_endpoint": "10.213.35.42:32000"}
+PASS；HTTP 200 body={"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTc4NzEzNzI3OSwiaWF0IjoxNzg3MDUwODc5fQ.x-6N20XtElvfTqUKlRvpQQ4tW2jiX89T8qu5iJFjIqA", "expires_at": "2026-08-19T11:01:19.859962Z", "nfs_host": "10.250.30.115", "nfs_export_path": "/mnt/dockerContainer/nfs/alice", "server_b_endpoint": "10.213.35.42:31000", "obs_pub_endpoint": "10.213.35.42:32000"}
 
 ## step 4 PASS
 cmd: sg docker -c 'docker ps --filter name=runner-alice --format '"'"'{{.Ports}}'"'"''

@@ -1,7 +1,7 @@
 {
   "id": "T-B-02",
-  "dir": "/home/isrc5090/149server/tests/ServerB/路径守卫",
-  "time": "2026-08-18 10:33:04 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/ServerB/路径守卫",
+  "time": "2026-08-18 19:00:19 +0800",
   "passed": true,
   "steps": [
     {

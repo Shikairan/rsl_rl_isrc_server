@@ -1,7 +1,7 @@
 {
   "id": "T-E2E-01",
-  "dir": "/home/isrc5090/149server/tests/端到端/登录到任务全链路",
-  "time": "2026-08-18 10:33:24 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/端到端/登录到任务全链路",
+  "time": "2026-08-18 19:00:39 +0800",
   "passed": true,
   "steps": [
     {
@@ -14,23 +14,23 @@
     {
       "step": 2,
       "ok": true,
-      "cmd": "POST /containers/start rsl_rl_isrc:v3-B",
+      "cmd": "POST /containers/start rsl_rl_isrc:v3-C",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
     },
     {
       "step": 3,
       "ok": true,
       "cmd": "POST $SERVER_B/tasks/start",
       "returncode": 202,
-      "result": "PASS；HTTP 202 body={\"task_id\":\"t-1\",\"status\":\"running\",\"started_at\":\"2026-08-18T02:33:18.735938+00:00\"}"
+      "result": "PASS；HTTP 202 body={\"task_id\":\"t-1\",\"status\":\"running\",\"started_at\":\"2026-08-18T11:00:33.561380+00:00\"}"
     },
     {
       "step": 4,
       "ok": true,
       "cmd": "GET $SERVER_B/tasks/t-1/status",
       "returncode": 0,
-      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T02:33:18.735938+00:00', 'finished_at': '2026-08-18T02:33:23.855625+00:00'}"
+      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:00:33.561380+00:00', 'finished_at': '2026-08-18T11:00:37.979190+00:00'}"
     },
     {
       "step": 5,

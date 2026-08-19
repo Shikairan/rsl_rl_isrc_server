@@ -1,7 +1,7 @@
 {
   "id": "T-F-01",
-  "dir": "/home/isrc5090/149server/tests/rsl_rl_isrc算法/镜像内包可import",
-  "time": "2026-08-18 10:32:36 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/rsl_rl_isrc算法/镜像内包可import",
+  "time": "2026-08-18 18:59:32 +0800",
   "passed": true,
   "steps": [
     {

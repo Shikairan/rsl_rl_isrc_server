@@ -17,7 +17,7 @@
 
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
-| 1 | 双卡、开启 zmq obs、极短训练 | `docker run --rm --gpus 2 --shm-size=16g --ipc=host -p 15555:15555 -p 15556:15556 -w /opt/rsl_rl_isrc rsl_rl_isrc:v3 torchrun --standalone --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 8 --max-iterations 1` | rank0 日志含 ObsInstrServer: PULL tcp://*:15555 与 REP tcp://*:15556；训练能结束或至少完成 iteration 0；退出码 0 | PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.9 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_feat… |
+| 1 | 双卡、开启 zmq obs、极短训练 | `docker run --rm --gpus 2 --shm-size=16g --ipc=host -p 15555:15555 -p 15556:15556 -w /opt/rsl_rl_isrc rsl_rl_isrc:v3 torchrun --standalone --nproc_per_node=2 rsl_rl_isrc/tests/test_ppo_g1_mujoco_ddp.py --num-envs 8 --max-iterations 1` | rank0 日志含 ObsInstrServer: PULL tcp://*:15555 与 REP tcp://*:15556；训练能结束或至少完成 iteration 0；退出码 0 | PASS；退出码 0；输出：[rank0] 未显式指定 --obs-server-host，自动推断为 172.17.0.12 ActorCriticRecurrent.__init__ got unexpected arguments, which will be ignored: dict_keys(['policy_class_name']) Actor MLP: Sequential( (0): Linear(in_features=128, out_features=512, bias=True) (1): ELU(alpha=1.0) (2): Linear(in_features=512, out_features=256, bias=True) (3): ELU(alpha=1.0) (4): Linear(in_fea… |
 
 ## 通过标准
 

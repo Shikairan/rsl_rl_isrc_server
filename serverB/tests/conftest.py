@@ -29,6 +29,7 @@ def workspace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("SERVER_B_WORKSPACE_ROOT", str(ws))
     monkeypatch.setenv("SERVER_B_LAUNCHER", sys.executable)
     monkeypatch.setenv("SERVER_B_STOP_GRACE_SEC", "1")
+    monkeypatch.setenv("SERVER_B_LOG_ENABLED", "0")
     return ws
 
 

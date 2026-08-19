@@ -1,4 +1,4 @@
-# I-05 2026-08-18 11:13:06 +0800
+# I-05 2026-08-18 19:01:51 +0800
 passed=True
 
 ## step 1 PASS
@@ -15,7 +15,7 @@ PASS；HTTP 400 body={"detail":{"error":"script_path must be relative to workspa
 
 ## step 4 PASS
 cmd: POST /tasks/start jobs/train.py
-PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T03:13:06.042981+00:00'}
+PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T11:01:51.265533+00:00'}
 
 ## step 5 PASS
 cmd: POST /containers/stop

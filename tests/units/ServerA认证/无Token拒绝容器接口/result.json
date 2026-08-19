@@ -1,7 +1,7 @@
 {
   "id": "T-A-04",
-  "dir": "/home/isrc5090/149server/tests/ServerA认证/无Token拒绝容器接口",
-  "time": "2026-08-18 10:32:01 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/ServerA认证/无Token拒绝容器接口",
+  "time": "2026-08-18 18:58:58 +0800",
   "passed": true,
   "steps": [
     {

@@ -126,6 +126,13 @@ class ContainerService:
                 if info and info.running:
                     existing.status = "running"
                     self.registry.upsert(existing)
+                    logger.info(
+                        "container start idempotent username=%s name=%s port=%s obs_port=%s",
+                        username,
+                        name,
+                        existing.host_port,
+                        existing.obs_host_port,
+                    )
                     return self._to_response(existing)
                 # leftover / stopped / missing → rm -f and recreate
                 self.docker.remove_force(existing.container_id)
@@ -135,6 +142,12 @@ class ContainerService:
                     self.obs_ports.release(existing.obs_host_port)
                 self.registry.delete(username)
 
+            logger.info(
+                "container start username=%s image=%s gpu_count=%s",
+                username,
+                req.image,
+                req.gpu_count,
+            )
             try:
                 host_port = self.ports.allocate()
                 obs_host_port = self.obs_ports.allocate()
@@ -184,6 +197,12 @@ class ContainerService:
             health = self.settings.server.health
             url = f"http://{self._endpoint(host_port)}/health"
             if not self.health_fn(url, health.interval_sec, health.timeout_sec):
+                logger.warning(
+                    "container health failed username=%s name=%s url=%s; recycling",
+                    username,
+                    name,
+                    url,
+                )
                 self.docker.remove_force(container_id)
                 self.docker.remove_force(name)
                 self.ports.release(host_port)
@@ -193,6 +212,13 @@ class ContainerService:
 
             rec.status = "running"
             self.registry.upsert(rec)
+            logger.info(
+                "container started username=%s name=%s port=%s obs_port=%s",
+                username,
+                name,
+                host_port,
+                obs_host_port,
+            )
             return self._to_response(rec)
 
     def current(self, username: str) -> ContainerResponse:
@@ -214,6 +240,7 @@ class ContainerService:
         if rec is None and self.docker.inspect(name) is None:
             raise ContainerNotFound()
         target = rec.container_id if rec else name
+        logger.info("container stop username=%s name=%s", username, name)
         self.docker.stop_and_remove(target)
         self.docker.remove_force(name)
         if rec:

@@ -1,9 +1,9 @@
-# T-OBS-02 2026-08-18 15:38:16 +0800
+# T-OBS-02 2026-08-18 18:59:59 +0800
 passed=True
 
 ## step 1 PASS
 cmd: sg docker -c 'docker image inspect rsl_rl_isrc:v3-C --format '"'"'{{.Id}}'"'"''
-PASS；退出码 0；输出：sha256:7e3e1f8913ef8ab409ba3a4069a07b686d83394b4d1567c722074031bce7fcae
+PASS；退出码 0；输出：sha256:e9fc49b4adc47eee0e385ca4ba071d3d0edd7b93125a7914afab8859ecebbce1
 
 ## step 2 PASS
 cmd: sg docker -c 'docker run --rm --entrypoint python3 rsl_rl_isrc:v3-C -c '"'"'import obsserver; from obsserver.transform import transform; print(transform([[1]]))'"'"''

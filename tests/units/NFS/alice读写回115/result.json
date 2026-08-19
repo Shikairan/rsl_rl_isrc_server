@@ -1,7 +1,7 @@
 {
   "id": "T-NFS-02",
-  "dir": "/home/isrc5090/149server/tests/NFS/alice读写回115",
-  "time": "2026-08-18 10:31:47 +0800",
+  "dir": "/home/isrc5090/149server/tests/units/NFS/alice读写回115",
+  "time": "2026-08-18 18:58:45 +0800",
   "passed": true,
   "steps": [
     {

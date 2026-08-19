@@ -1,13 +1,13 @@
 {
   "id": "I-01",
   "dir": "/home/isrc5090/149server/tests/integration/I-01-alice主链路",
-  "time": "2026-08-18 11:12:48 +0800",
+  "time": "2026-08-18 19:01:02 +0800",
   "passed": true,
   "steps": [
     {
       "step": 1,
       "ok": true,
-      "cmd": "GET http://10.213.35.42:8000/health",
+      "cmd": "GET http://10.213.35.42:8017/health",
       "returncode": 200,
       "result": "PASS；HTTP 200 body={\"status\":\"ok\"}"
     },
@@ -28,9 +28,9 @@
     {
       "step": 4,
       "ok": true,
-      "cmd": "POST /containers/start rsl_rl_isrc:v3-B gpu_count=1",
+      "cmd": "POST /containers/start rsl_rl_isrc:v3-C gpu_count=1",
       "returncode": 200,
-      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={\"server_b_endpoint\": \"10.213.35.42:31000\", \"container_status\": \"running\", \"container_name\": \"runner-alice\", \"nfs_mount_path\": \"/workspace\"}"
+      "result": "PASS；HTTP 200 endpoint=10.213.35.42:31000 body={\"server_b_endpoint\": \"10.213.35.42:31000\", \"obs_pub_endpoint\": \"10.213.35.42:32000\", \"container_status\": \"running\", \"container_name\": \"runner-alice\", \"nfs_mount_path\": \"/workspace\"}"
     },
     {
       "step": 5,
@@ -44,28 +44,28 @@
       "ok": true,
       "cmd": "POST $SERVER_B/tasks/start jobs/train.py",
       "returncode": 202,
-      "result": "PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T03:12:42.143722+00:00'}"
+      "result": "PASS；HTTP 202 body={'task_id': 't-1', 'status': 'running', 'started_at': '2026-08-18T11:00:55.383624+00:00'}"
     },
     {
       "step": 7,
       "ok": true,
       "cmd": "GET $SERVER_B/tasks/t-1/status",
       "returncode": 0,
-      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T03:12:42.143722+00:00', 'finished_at': '2026-08-18T03:12:47.099143+00:00'}"
+      "result": "PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:00:55.383624+00:00', 'finished_at': '2026-08-18T11:00:59.628716+00:00'}"
     },
     {
       "step": 8,
       "ok": true,
       "cmd": "GET $SERVER_B/tasks/t-1/logs（运行中采集，结束后 B 会释放日志）",
       "returncode": 0,
-      "result": "PASS；rank=0 local_rank=0 device=cuda:0 torch=2.11.0+cu128 cuda=True nproc=1 epoch=1/3 loss=1.016077 epoch=2/3 loss=0.838239"
+      "result": "PASS；rank=0 local_rank=0 device=cuda:0 torch=2.11.0+cu128 cuda=True nproc=1 epoch=1/3 loss=1.208100 epoch=2/3 loss=0.775710 epoch=3/3 loss=1.206483 wrote /workspace/jobs/last_run.txt"
     },
     {
       "step": 9,
       "ok": true,
       "cmd": "ls last_run.txt；可选 115 cat",
       "returncode": 0,
-      "result": "PASS；本机 rc=0 -rw-r--r-- 1 root root 102 Aug 18 11:12 /mnt/nfs/alice/jobs/last_run.txt；115 rc=0 finished_at=2026-08-18T03:12:46.178476+00:00 device=cuda:0 torch=2.11.0+cu128 loss=0.8165504336357117"
+      "result": "PASS；本机 rc=0 -rw-r--r-- 1 root root 102 Aug 18 19:00 /mnt/nfs/alice/jobs/last_run.txt；115 rc=0 finished_at=2026-08-18T11:00:58.790002+00:00 device=cuda:0 torch=2.11.0+cu128 loss=1.2064834833145142"
     },
     {
       "step": 10,

@@ -26,10 +26,10 @@
 | 步骤 | 操作 | 命令 | 预期 | 真实结果 |
 |------|------|------|------|----------|
 | 1 | start 一次容器 | `POST /containers/start {"image":"rsl_rl_isrc:v3-C","gpu_count":2}` | HTTP 200；记下 `server_b_endpoint`、`obs_pub_endpoint` | PASS；HTTP 200 body={"server_b_endpoint": "10.213.35.42:31000", "obs_pub_endpoint": "10.213.35.42:32000", "container_status": "running", "container_name": "runner-alice", "nfs_mount_path": "/workspace"} |
-| 2 | 第一次训练 | `POST http://$EP/tasks/start ...` | HTTP 202；最终 `succeeded` | PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:34:44.594740+00:00', 'finished_at': '2026-08-18T08:34:51.669228+00:00'} |
+| 2 | 第一次训练 | `POST http://$EP/tasks/start ...` | HTTP 202；最终 `succeeded` | PASS；{'task_id': 't-1', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:01:33.760601+00:00', 'finished_at': '2026-08-18T11:01:40.954749+00:00'} |
 | 3 | 第一轮出帧 | SUB 看 `obs_pub_endpoint` | 收到至少一帧；训练结束后停在最后一帧 | PASS；[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.02625518478 |
 | 4 | 不 stop 容器，再次 start 查询 | 再调一次 `POST /containers/start` 或 `GET /containers/current` | 仍是同一 `container_name`、同一 `obs_pub_endpoint` | PASS；current=10.213.35.42:32000 start2=10.213.35.42:32000 |
-| 5 | 第二次训练 | 再次 `POST http://$EP/tasks/start ...` | HTTP 202；最终 `succeeded` | PASS；{'task_id': 't-2', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T08:34:51.887439+00:00', 'finished_at': '2026-08-18T08:34:58.720628+00:00'} |
+| 5 | 第二次训练 | 再次 `POST http://$EP/tasks/start ...` | HTTP 202；最终 `succeeded` | PASS；{'task_id': 't-2', 'status': 'succeeded', 'exit_code': 0, 'started_at': '2026-08-18T11:01:41.091430+00:00', 'finished_at': '2026-08-18T11:01:47.969753+00:00'} |
 | 6 | 第二轮继续出帧 | 原连接继续等或重连同一地址 | 能再次收到新帧；地址不变 | PASS；[[[0.8647451400756836, 0.3887401521205902, 0.7984024286270142], [-0.015115750022232533, 0.006550956051796675, 0.00015763593546580523, 0.9998642802238464], [-0.04433643817901611, 0.09725047647953033, 0.09105551242828369, 0.31314772367477417, -0.20392243564128876, -0.021056275814771652, -0.02625518478 |
 | 7 | 最后 stop 容器 | `POST /containers/stop` | HTTP 200 | PASS；HTTP 200 body={"status":"stopped"} |
 
