@@ -50,6 +50,12 @@
 | [T-OBS-05](观测转发/中继环境变量/plan.md) | 中继环境变量 | `观测转发/中继环境变量/` | [`run.py`](观测转发/中继环境变量/run.py) |
 | [T-OBS-06](观测转发/训练开ZMQ经中继出画面/plan.md) | 训练开 ZMQ 经中继出画面（可选） | `观测转发/训练开ZMQ经中继出画面/` | [`run.py`](观测转发/训练开ZMQ经中继出画面/run.py) |
 | [T-OBS-07](观测转发/ServerA返回画面地址/plan.md) | Server A 返回 obs_pub_endpoint | `观测转发/ServerA返回画面地址/` | [`run.py`](观测转发/ServerA返回画面地址/run.py) |
+| [T-TB-01](TensorBoard/v3-D镜像含tensorboard/plan.md) | v3-D 镜像含 tensorboard CLI / EXPOSE 6006 | `TensorBoard/v3-D镜像含tensorboard/` | [`run.py`](TensorBoard/v3-D镜像含tensorboard/run.py) |
+| [T-TB-02](TensorBoard/手工映射6006可打开/plan.md) | 手工 `-p 33xxx:6006` 可打开 TB | `TensorBoard/手工映射6006可打开/` | [`run.py`](TensorBoard/手工映射6006可打开/run.py) |
+| [T-TB-03](TensorBoard/ServerA返回TB地址/plan.md) | Server A 返回 tensorboard_endpoint | `TensorBoard/ServerA返回TB地址/` | [`run.py`](TensorBoard/ServerA返回TB地址/run.py) |
+| [T-TB-04](TensorBoard/训练事件后TB可见/plan.md) | 写 event 后 TB 页面可访问 | `TensorBoard/训练事件后TB可见/` | [`run.py`](TensorBoard/训练事件后TB可见/run.py) |
+| [T-TB-05](TensorBoard/alice与bob隔离/plan.md) | alice / bob 端口不同 | `TensorBoard/alice与bob隔离/` | [`run.py`](TensorBoard/alice与bob隔离/run.py) |
+| [T-TB-06](TensorBoard/stop释放端口/plan.md) | stop 后 33xxx 不再监听 | `TensorBoard/stop释放端口/` | [`run.py`](TensorBoard/stop释放端口/run.py) |
 | [T-B-01](ServerB/健康检查/plan.md) | Server B 健康检查 | `ServerB/健康检查/` | [`run.sh`](ServerB/健康检查/run.sh) |
 | [T-B-02](ServerB/路径守卫/plan.md) | 路径守卫 | `ServerB/路径守卫/` | [`run.sh`](ServerB/路径守卫/run.sh) |
 | [T-B-03](ServerB/单任务锁/plan.md) | 单任务锁 | `ServerB/单任务锁/` | [`run.sh`](ServerB/单任务锁/run.sh) |
@@ -67,6 +73,7 @@
 - `torchrun与CUDA/`
 - `rsl_rl_isrc算法/`
 - `观测转发/`（T-OBS-01～07，方案见 [obsserver/PLAN.md](../obsserver/PLAN.md)）
+- `TensorBoard/`（T-TB-01～06）
 - `ServerB/`
 - `端到端/`
 

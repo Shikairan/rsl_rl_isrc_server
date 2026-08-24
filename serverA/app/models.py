@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS containers (
     container_name TEXT NOT NULL,
     host_port      INTEGER NOT NULL,
     obs_host_port  INTEGER,
+    tb_host_port   INTEGER,
     image          TEXT NOT NULL,
     gpu_count      INTEGER NOT NULL,
     cpu            TEXT,
@@ -28,6 +29,7 @@ class ContainerRecord:
     container_name: str
     host_port: int
     obs_host_port: int | None
+    tb_host_port: int | None
     image: str
     gpu_count: int
     cpu: str | None

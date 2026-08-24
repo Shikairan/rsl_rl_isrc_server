@@ -1,0 +1,43 @@
+{
+  "id": "T-TB-06",
+  "dir": "/home/isrc5090/149server/tests/units/TensorBoard/stop释放端口",
+  "time": "2026-08-24 17:14:19 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /containers/start",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 tb=10.213.35.42:33000"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "TCP before stop",
+      "returncode": 0,
+      "result": "PASS；10.213.35.42:33000 reachable=True"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 {\"status\":\"stopped\"}"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "TCP after stop",
+      "returncode": 0,
+      "result": "PASS；10.213.35.42:33000 reachable=False"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "sg docker -c 'docker ps --filter name=runner-alice --format '\"'\"'{{.Names}}'\"'\"''",
+      "returncode": 0,
+      "result": "PASS；退出码 0"
+    }
+  ]
+}

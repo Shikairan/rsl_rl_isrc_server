@@ -53,7 +53,7 @@ def start_container(
     try:
         return svc.start(username, body)
     except NfsError as exc:
-        raise HTTPException(status_code=500, detail={"error": str(exc)}) from exc
+        raise HTTPException(status_code=503, detail={"error": str(exc)}) from exc
     except PortPoolExhausted as exc:
         raise HTTPException(status_code=503, detail={"error": str(exc)}) from exc
     except HealthCheckFailed as exc:

@@ -1,0 +1,36 @@
+{
+  "id": "T-TB-05",
+  "dir": "/home/isrc5090/149server/tests/units/TensorBoard/alice与bob隔离",
+  "time": "2026-08-24 17:14:14 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "alice start",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 tb=10.213.35.42:33000"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "bob start",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 tb=10.213.35.42:33001"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "compare tensorboard_endpoint",
+      "returncode": 0,
+      "result": "PASS；alice=10.213.35.42:33000 bob=10.213.35.42:33001"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "stop alice+bob",
+      "returncode": 200,
+      "result": "PASS；issued stop"
+    }
+  ]
+}

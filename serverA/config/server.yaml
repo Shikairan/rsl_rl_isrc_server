@@ -6,6 +6,8 @@ server:
   jwt_ttl_hours: 24
   port_range: [31000, 31999]
   obs_port_range: [32000, 32999]
+  tensorboard_port_range: [33000, 33999]
+  tensorboard_container_port: 6006
   nfs_mount_root: "/mnt/nfs"
   container_workspace: "/workspace"
   health:

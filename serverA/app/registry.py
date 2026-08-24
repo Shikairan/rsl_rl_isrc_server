@@ -24,7 +24,9 @@ class Registry:
             cols = {row["name"] for row in conn.execute("PRAGMA table_info(containers)").fetchall()}
             if "obs_host_port" not in cols:
                 conn.execute("ALTER TABLE containers ADD COLUMN obs_host_port INTEGER")
-                conn.commit()
+            if "tb_host_port" not in cols:
+                conn.execute("ALTER TABLE containers ADD COLUMN tb_host_port INTEGER")
+            conn.commit()
 
     def _connect(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path, check_same_thread=False)
@@ -49,20 +51,24 @@ class Registry:
     def allocated_obs_ports(self) -> set[int]:
         return {r.obs_host_port for r in self.list_all() if r.obs_host_port is not None}
 
+    def allocated_tb_ports(self) -> set[int]:
+        return {r.tb_host_port for r in self.list_all() if r.tb_host_port is not None}
+
     def upsert(self, rec: ContainerRecord) -> None:
         rec.updated_at = _now()
         with self._lock, self._connect() as conn:
             conn.execute(
                 """
                 INSERT INTO containers (
-                    username, container_id, container_name, host_port, obs_host_port, image,
+                    username, container_id, container_name, host_port, obs_host_port, tb_host_port, image,
                     gpu_count, cpu, memory, status, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(username) DO UPDATE SET
                     container_id=excluded.container_id,
                     container_name=excluded.container_name,
                     host_port=excluded.host_port,
                     obs_host_port=excluded.obs_host_port,
+                    tb_host_port=excluded.tb_host_port,
                     image=excluded.image,
                     gpu_count=excluded.gpu_count,
                     cpu=excluded.cpu,
@@ -76,6 +82,7 @@ class Registry:
                     rec.container_name,
                     rec.host_port,
                     rec.obs_host_port,
+                    rec.tb_host_port,
                     rec.image,
                     rec.gpu_count,
                     rec.cpu,
@@ -100,6 +107,7 @@ class Registry:
             container_name=row["container_name"],
             host_port=int(row["host_port"]),
             obs_host_port=row["obs_host_port"] if row["obs_host_port"] is not None else None,
+            tb_host_port=row["tb_host_port"] if "tb_host_port" in row.keys() and row["tb_host_port"] is not None else None,
             image=row["image"],
             gpu_count=int(row["gpu_count"]),
             cpu=row["cpu"],

@@ -1,0 +1,36 @@
+{
+  "id": "T-TB-04",
+  "dir": "/home/isrc5090/149server/tests/units/TensorBoard/训练事件后TB可见",
+  "time": "2026-08-24 17:14:06 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /containers/start",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 tb=10.213.35.42:33000"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "sg docker -c 'docker exec runner-alice python3 -c '\"'\"'from torch.utils.tensorboard import SummaryWriter;w=SummaryWriter('\"'\"'\"'\"'\"'\"'\"'\"'/workspace/logs/tensorboard/t_tb_04'\"'\"'\"'\"'\"'\"'\"'\"');w.add_scalar('\"'\"'\"'\"'\"'\"'\"'\"'loss'\"'\"'\"'\"'\"'\"'\"'\"', 1.23, 0); w.flush(); w.close(); print('\"'\"'\"'\"'\"'\"'\"'\"'ok'\"'\"'\"'\"'\"'\"'\"'\"')'\"'\"''",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：ok"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "GET http://10.213.35.42:33000/",
+      "returncode": 200,
+      "result": "PASS；ready=True HTTP 200 body=<!doctype html><meta name=\"tb-relative-root\" content=\"./\"><!doctype html><!--\n@license\nCopyright 2019 The TensorFlow Authors. All Rights Reserved.\n\nLicensed und"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 {\"status\":\"stopped\"}"
+    }
+  ]
+}

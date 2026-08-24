@@ -1,0 +1,14 @@
+# T-TB-01 2026-08-24 17:12:19 +0800
+passed=True
+
+## step 1 PASS
+cmd: sg docker -c 'docker image inspect rsl_rl_isrc:v3-D --format '"'"'{{.Id}}'"'"''
+PASS；退出码 0；输出：sha256:14ac46e17e328e09dd48e4bce5624979a424a12df74cb237b8731978387ef593
+
+## step 2 PASS
+cmd: sg docker -c 'docker run --rm --entrypoint tensorboard rsl_rl_isrc:v3-D --version'
+PASS；退出码 0；输出：2.21.0 TensorFlow installation not found - running with reduced feature set.
+
+## step 3 PASS
+cmd: sg docker -c 'docker image inspect rsl_rl_isrc:v3-D --format '"'"'{{json .Config.ExposedPorts}}'"'"''
+PASS；退出码 0；输出：{"15557/tcp":{},"6006/tcp":{},"8080/tcp":{}}

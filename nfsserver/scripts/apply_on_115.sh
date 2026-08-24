@@ -13,13 +13,13 @@ for u in "${USERS[@]}"; do
 done
 sudo tee /etc/exports >/dev/null << 'EOF'
 # 149server nfsserver
-/mnt/dockerContainer/nfs       10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)
-/mnt/dockerContainer/nfs/alice 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)
-/mnt/dockerContainer/nfs/bob   10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)
-/mnt/dockerContainer/nfs/carol 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)
-/mnt/dockerContainer/nfs/dave  10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)
-/mnt/dockerContainer/nfs/eve   10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)
-/mnt/dockerContainer/nfs/frank 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)
+/mnt/dockerContainer/nfs       10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash) 192.168.31.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/dockerContainer/nfs/alice 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash) 192.168.31.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/dockerContainer/nfs/bob   10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash) 192.168.31.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/dockerContainer/nfs/carol 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash) 192.168.31.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/dockerContainer/nfs/dave  10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash) 192.168.31.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/dockerContainer/nfs/eve   10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash) 192.168.31.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/dockerContainer/nfs/frank 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash) 192.168.31.0/24(rw,sync,no_subtree_check,no_root_squash)
 EOF
 sudo exportfs -ra
 sudo systemctl enable --now nfs-server

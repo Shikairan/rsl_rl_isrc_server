@@ -39,6 +39,7 @@ class ServerSettings(BaseModel):
     jwt_ttl_hours: int = 24
     port_range: list[int] = Field(default_factory=lambda: [31000, 31999])
     obs_port_range: list[int] = Field(default_factory=lambda: [32000, 32999])
+    tensorboard_port_range: list[int] = Field(default_factory=lambda: [33000, 33999])
     nfs_mount_root: str = "/mnt/nfs"
     container_workspace: str = "/workspace"
     health: HealthSettings = Field(default_factory=HealthSettings)
@@ -52,6 +53,7 @@ class ServerSettings(BaseModel):
     obs_container_port: int = 15557
     obs_relay_http_url: str = "http://127.0.0.1:15558/post"
     obs_relay_timeout_sec: float = 0.05
+    tensorboard_container_port: int = 6006
 
 
 class UserRecord(BaseModel):

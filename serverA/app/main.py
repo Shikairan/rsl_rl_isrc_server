@@ -34,12 +34,15 @@ async def lifespan(app: FastAPI):
     ports = PortPool(start, end, in_use=registry.allocated_ports())
     obs_start, obs_end = settings.server.obs_port_range
     obs_ports = PortPool(obs_start, obs_end, in_use=registry.allocated_obs_ports())
+    tb_start, tb_end = settings.server.tensorboard_port_range
+    tb_ports = PortPool(tb_start, tb_end, in_use=registry.allocated_tb_ports())
     docker = DockerMgr()
     app.state.registry = registry
     app.state.ports = ports
     app.state.obs_ports = obs_ports
+    app.state.tb_ports = tb_ports
     app.state.docker = docker
-    app.state.containers = ContainerService(settings, registry, ports, obs_ports, docker)
+    app.state.containers = ContainerService(settings, registry, ports, obs_ports, tb_ports, docker)
     logger.info(
         "server A ready nfs.enabled=%s docker.enabled=%s users=%s db=%s log_dir=%s",
         settings.server.nfs.enabled,

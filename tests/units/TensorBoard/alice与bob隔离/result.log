@@ -1,0 +1,18 @@
+# T-TB-05 2026-08-24 17:14:14 +0800
+passed=True
+
+## step 1 PASS
+cmd: alice start
+PASS；HTTP 200 tb=10.213.35.42:33000
+
+## step 2 PASS
+cmd: bob start
+PASS；HTTP 200 tb=10.213.35.42:33001
+
+## step 3 PASS
+cmd: compare tensorboard_endpoint
+PASS；alice=10.213.35.42:33000 bob=10.213.35.42:33001
+
+## step 4 PASS
+cmd: stop alice+bob
+PASS；issued stop

@@ -1,6 +1,6 @@
 # Server A（本机 conda 环境 `serverA`）
 
-当前：登录 + 容器 start/current/stop。`nfs.enabled=false`（不强制启动挂载），`docker.enabled=true`。
+当前：登录 + 容器 start/current/stop。`nfs.enabled=false` 时启动不自动 `mount`，但 **start 仍要求用户目录已经是 NFS 挂载**，否则返回 503。`docker.enabled=true`。
 
 ```bash
 conda activate serverA
@@ -28,6 +28,7 @@ curl -X POST localhost:8017/containers/start \
 ```
 
 镜像需在 8080 提供 `GET /health`（Server B 契约）。健康检查失败会 `docker rm -f` 并返回 502。
+`rsl_rl_isrc:v3-D` 还会在 6006 起 TensorBoard；start / current / login 返回 `tensorboard_endpoint`（`10.213.35.42:33xxx`）。旧容器需 stop 再 start 才会带上该端口。
 本机用户需在 `docker` 组才能访问 Docker socket。
 
 ## 落盘日志

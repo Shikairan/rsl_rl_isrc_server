@@ -1,0 +1,26 @@
+# T-TB-03 2026-08-24 17:13:59 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /containers/start rsl_rl_isrc:v3-D
+PASS；HTTP 200 tb=10.213.35.42:33000 body={"server_b_endpoint":"10.213.35.42:31000","obs_pub_endpoint":"10.213.35.42:32000","tensorboard_endpoint":"10.213.35.42:33000","container_status":"running","container_name":"runner-alice","nfs_mount_path":"/workspace"}
+
+## step 2 PASS
+cmd: POST /login
+PASS；HTTP 200 tb=10.213.35.42:33000
+
+## step 3 PASS
+cmd: TCP connect tensorboard_endpoint
+PASS；tb=10.213.35.42:33000 tcp=True probe=ok
+
+## step 4 PASS
+cmd: sg docker -c 'docker ps --filter name=runner-alice --format '"'"'{{.Ports}}'"'"''
+PASS；退出码 0；输出：10.213.35.42:33000->6006/tcp, 10.213.35.42:31000->8080/tcp, 10.213.35.42:32000->15557/tcp
+
+## step 5 PASS
+cmd: GET /containers/current + POST /containers/start again
+PASS；current=10.213.35.42:33000 start2=10.213.35.42:33000
+
+## step 6 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 body={"status":"stopped"}

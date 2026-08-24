@@ -7,14 +7,13 @@ import socket
 import threading
 import time
 from datetime import datetime, timezone
-from pathlib import Path
 
 import httpx
 
 from app.config import Settings, UserRecord
 from app.docker_mgr import DockerError, DockerMgr
 from app.models import ContainerRecord
-from app.nfs import NfsError, remount_if_missing
+from app.nfs import NfsError, ensure_user_nfs
 from app.ports import PortPoolExhausted
 from app.registry import Registry
 from app.schemas import ContainerResponse, ContainerStartRequest
@@ -70,6 +69,7 @@ class ContainerService:
         registry: Registry,
         ports: PortPool,
         obs_ports: PortPool,
+        tb_ports: PortPool,
         docker: DockerMgr,
         health_fn=wait_healthy,
     ) -> None:
@@ -77,6 +77,7 @@ class ContainerService:
         self.registry = registry
         self.ports = ports
         self.obs_ports = obs_ports
+        self.tb_ports = tb_ports
         self.docker = docker
         self.health_fn = health_fn
         self._locks: dict[str, threading.Lock] = {}
@@ -91,9 +92,7 @@ class ContainerService:
             return lock
 
     def _ensure_workspace(self, user: UserRecord) -> None:
-        Path(user.local_mount_path).mkdir(parents=True, exist_ok=True)
-        if self.settings.server.nfs.enabled:
-            remount_if_missing(user)
+        ensure_user_nfs(user, auto_mount=self.settings.server.nfs.enabled)
 
     def _endpoint(self, host_port: int) -> str:
         return f"{self.settings.server.internal_ip}:{host_port}"
@@ -103,10 +102,16 @@ class ContainerService:
             return None
         return self._endpoint(obs_host_port)
 
+    def _tb_endpoint(self, tb_host_port: int | None) -> str | None:
+        if tb_host_port is None:
+            return None
+        return self._endpoint(tb_host_port)
+
     def _to_response(self, rec: ContainerRecord) -> ContainerResponse:
         return ContainerResponse(
             server_b_endpoint=self._endpoint(rec.host_port),
             obs_pub_endpoint=self._obs_endpoint(rec.obs_host_port),
+            tensorboard_endpoint=self._tb_endpoint(rec.tb_host_port),
             container_status=rec.status,
             container_name=rec.container_name,
             nfs_mount_path=self.settings.server.container_workspace,
@@ -127,11 +132,12 @@ class ContainerService:
                     existing.status = "running"
                     self.registry.upsert(existing)
                     logger.info(
-                        "container start idempotent username=%s name=%s port=%s obs_port=%s",
+                        "container start idempotent username=%s name=%s port=%s obs_port=%s tb_port=%s",
                         username,
                         name,
                         existing.host_port,
                         existing.obs_host_port,
+                        existing.tb_host_port,
                     )
                     return self._to_response(existing)
                 # leftover / stopped / missing → rm -f and recreate
@@ -140,6 +146,8 @@ class ContainerService:
                 self.ports.release(existing.host_port)
                 if existing.obs_host_port is not None:
                     self.obs_ports.release(existing.obs_host_port)
+                if existing.tb_host_port is not None:
+                    self.tb_ports.release(existing.tb_host_port)
                 self.registry.delete(username)
 
             logger.info(
@@ -151,9 +159,14 @@ class ContainerService:
             try:
                 host_port = self.ports.allocate()
                 obs_host_port = self.obs_ports.allocate()
+                tb_host_port = self.tb_ports.allocate()
             except PortPoolExhausted:
                 if "host_port" in locals():
                     self.ports.release(host_port)
+                if "obs_host_port" in locals():
+                    self.obs_ports.release(obs_host_port)
+                if "tb_host_port" in locals():
+                    self.tb_ports.release(tb_host_port)
                 raise
 
             rec = ContainerRecord(
@@ -162,6 +175,7 @@ class ContainerService:
                 container_name=name,
                 host_port=host_port,
                 obs_host_port=obs_host_port,
+                tb_host_port=tb_host_port,
                 image=req.image,
                 gpu_count=req.gpu_count,
                 cpu=req.cpu,
@@ -180,6 +194,8 @@ class ContainerService:
                     host_port=host_port,
                     obs_host_port=obs_host_port,
                     obs_container_port=self.settings.server.obs_container_port,
+                    tb_host_port=tb_host_port,
+                    tb_container_port=self.settings.server.tensorboard_container_port,
                     gpu_count=req.gpu_count,
                     cpu=req.cpu,
                     memory=req.memory,
@@ -192,6 +208,7 @@ class ContainerService:
                 self.docker.remove_force(name)
                 self.ports.release(host_port)
                 self.obs_ports.release(obs_host_port)
+                self.tb_ports.release(tb_host_port)
                 raise
 
             health = self.settings.server.health
@@ -207,17 +224,19 @@ class ContainerService:
                 self.docker.remove_force(name)
                 self.ports.release(host_port)
                 self.obs_ports.release(obs_host_port)
+                self.tb_ports.release(tb_host_port)
                 self.registry.delete(username)
                 raise HealthCheckFailed(f"health check failed: {url}")
 
             rec.status = "running"
             self.registry.upsert(rec)
             logger.info(
-                "container started username=%s name=%s port=%s obs_port=%s",
+                "container started username=%s name=%s port=%s obs_port=%s tb_port=%s",
                 username,
                 name,
                 host_port,
                 obs_host_port,
+                tb_host_port,
             )
             return self._to_response(rec)
 
@@ -247,13 +266,19 @@ class ContainerService:
             self.ports.release(rec.host_port)
             if rec.obs_host_port is not None:
                 self.obs_ports.release(rec.obs_host_port)
+            if rec.tb_host_port is not None:
+                self.tb_ports.release(rec.tb_host_port)
             self.registry.delete(username)
 
-    def running_endpoints(self, username: str) -> tuple[str | None, str | None]:
+    def running_endpoints(self, username: str) -> tuple[str | None, str | None, str | None]:
         rec = self.registry.get(username)
         if rec is None or rec.status != "running":
-            return None, None
+            return None, None, None
         info = self.docker.inspect(rec.container_id) or self.docker.inspect(rec.container_name)
         if info and info.running:
-            return self._endpoint(rec.host_port), self._obs_endpoint(rec.obs_host_port)
-        return None, None
+            return (
+                self._endpoint(rec.host_port),
+                self._obs_endpoint(rec.obs_host_port),
+                self._tb_endpoint(rec.tb_host_port),
+            )
+        return None, None, None

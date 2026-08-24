@@ -1,0 +1,50 @@
+{
+  "id": "T-TB-03",
+  "dir": "/home/isrc5090/149server/tests/units/TensorBoard/ServerA返回TB地址",
+  "time": "2026-08-24 17:13:59 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "POST /containers/start rsl_rl_isrc:v3-D",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 tb=10.213.35.42:33000 body={\"server_b_endpoint\":\"10.213.35.42:31000\",\"obs_pub_endpoint\":\"10.213.35.42:32000\",\"tensorboard_endpoint\":\"10.213.35.42:33000\",\"container_status\":\"running\",\"container_name\":\"runner-alice\",\"nfs_mount_path\":\"/workspace\"}"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "POST /login",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 tb=10.213.35.42:33000"
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "TCP connect tensorboard_endpoint",
+      "returncode": 0,
+      "result": "PASS；tb=10.213.35.42:33000 tcp=True probe=ok"
+    },
+    {
+      "step": 4,
+      "ok": true,
+      "cmd": "sg docker -c 'docker ps --filter name=runner-alice --format '\"'\"'{{.Ports}}'\"'\"''",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：10.213.35.42:33000->6006/tcp, 10.213.35.42:31000->8080/tcp, 10.213.35.42:32000->15557/tcp"
+    },
+    {
+      "step": 5,
+      "ok": true,
+      "cmd": "GET /containers/current + POST /containers/start again",
+      "returncode": 0,
+      "result": "PASS；current=10.213.35.42:33000 start2=10.213.35.42:33000"
+    },
+    {
+      "step": 6,
+      "ok": true,
+      "cmd": "POST /containers/stop",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body={\"status\":\"stopped\"}"
+    }
+  ]
+}

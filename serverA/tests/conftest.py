@@ -47,6 +47,7 @@ def docker_client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient
         docker.run = MagicMock(return_value="cid-1")
         svc = test_client.app.state.containers
         svc.health_fn = MagicMock(return_value=True)
+        monkeypatch.setattr("app.nfs.is_nfs_mount", lambda path: True)
         yield test_client
 
 

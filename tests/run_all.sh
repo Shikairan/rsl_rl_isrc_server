@@ -66,6 +66,18 @@ echo "===== T-OBS-06 观测转发/训练开ZMQ经中继出画面 ====="
 python3 "$ROOT/观测转发/训练开ZMQ经中继出画面/run.py" || fail=1
 echo "===== T-OBS-07 观测转发/ServerA返回画面地址 ====="
 python3 "$ROOT/观测转发/ServerA返回画面地址/run.py" || fail=1
+echo "===== T-TB-01 TensorBoard/v3-D镜像含tensorboard ====="
+python3 "$ROOT/TensorBoard/v3-D镜像含tensorboard/run.py" || fail=1
+echo "===== T-TB-02 TensorBoard/手工映射6006可打开 ====="
+python3 "$ROOT/TensorBoard/手工映射6006可打开/run.py" || fail=1
+echo "===== T-TB-03 TensorBoard/ServerA返回TB地址 ====="
+python3 "$ROOT/TensorBoard/ServerA返回TB地址/run.py" || fail=1
+echo "===== T-TB-04 TensorBoard/训练事件后TB可见 ====="
+python3 "$ROOT/TensorBoard/训练事件后TB可见/run.py" || fail=1
+echo "===== T-TB-05 TensorBoard/alice与bob隔离 ====="
+python3 "$ROOT/TensorBoard/alice与bob隔离/run.py" || fail=1
+echo "===== T-TB-06 TensorBoard/stop释放端口 ====="
+python3 "$ROOT/TensorBoard/stop释放端口/run.py" || fail=1
 echo "===== T-B-01 ServerB/健康检查 ====="
 python3 "$ROOT/ServerB/健康检查/run.py" || fail=1
 echo "===== T-B-02 ServerB/路径守卫 ====="

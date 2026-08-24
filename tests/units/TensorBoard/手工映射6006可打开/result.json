@@ -1,0 +1,29 @@
+{
+  "id": "T-TB-02",
+  "dir": "/home/isrc5090/149server/tests/units/TensorBoard/手工映射6006可打开",
+  "time": "2026-08-24 17:12:21 +0800",
+  "passed": true,
+  "steps": [
+    {
+      "step": 1,
+      "ok": true,
+      "cmd": "sg docker -c 'docker run -d --name tb-manual --rm -p 127.0.0.1:18080:8080 -p 127.0.0.1:13306:6006 rsl_rl_isrc:v3-D'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；health=True tb=True；输出：55d4c8605d4ae58425e2346d5146a11ed0938e5ab7208e9d84c8f748129cde0e"
+    },
+    {
+      "step": 2,
+      "ok": true,
+      "cmd": "GET http://127.0.0.1:13306/",
+      "returncode": 200,
+      "result": "PASS；HTTP 200 body=<!doctype html><meta name=\"tb-relative-root\" content=\"./\"><!doctype html><!--\n@license\nCopyright 2019 The TensorFlow Authors. All Rights Reserved.\n\nLicensed under the Apache License, Version 2.0 (the "
+    },
+    {
+      "step": 3,
+      "ok": true,
+      "cmd": "sg docker -c 'docker rm -f tb-manual'",
+      "returncode": 0,
+      "result": "PASS；退出码 0；输出：tb-manual"
+    }
+  ]
+}

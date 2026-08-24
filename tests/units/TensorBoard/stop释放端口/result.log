@@ -1,0 +1,22 @@
+# T-TB-06 2026-08-24 17:14:19 +0800
+passed=True
+
+## step 1 PASS
+cmd: POST /containers/start
+PASS；HTTP 200 tb=10.213.35.42:33000
+
+## step 2 PASS
+cmd: TCP before stop
+PASS；10.213.35.42:33000 reachable=True
+
+## step 3 PASS
+cmd: POST /containers/stop
+PASS；HTTP 200 {"status":"stopped"}
+
+## step 4 PASS
+cmd: TCP after stop
+PASS；10.213.35.42:33000 reachable=False
+
+## step 5 PASS
+cmd: sg docker -c 'docker ps --filter name=runner-alice --format '"'"'{{.Names}}'"'"''
+PASS；退出码 0

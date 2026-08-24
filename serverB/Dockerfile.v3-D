@@ -1,0 +1,16 @@
+# 在 149server 仓库根目录：
+#   docker build -f serverB/Dockerfile.v3-D -t rsl_rl_isrc:v3-D .
+FROM rsl_rl_isrc:v3-C
+
+ENV RSL_RL_ISRC_LOG_ROOT=/workspace/logs/tensorboard \
+    TENSORBOARD_PORT=6006 \
+    TENSORBOARD_ENABLE=1
+
+COPY serverB/entrypoint.sh /opt/serverB/entrypoint.sh
+
+RUN chmod +x /opt/serverB/entrypoint.sh \
+    && command -v tensorboard
+
+WORKDIR /workspace
+EXPOSE 8080 15557 6006
+ENTRYPOINT ["/opt/serverB/entrypoint.sh"]

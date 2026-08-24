@@ -15,11 +15,15 @@ python -m app --host 0.0.0.0 --port 8080
 
 pytest 默认 `SERVER_B_LOG_ENABLED=0`，不写真实 NFS。
 
-打 **v3-C**（v3-B + 观测转发 + 更新后的 Server B）须在 **149server 仓库根**：
+打 **v3-C**（v3-B + 观测转发 + 更新后的 Server B）或 **v3-D**（v3-C + 常驻 TensorBoard :6006）须在 **149server 仓库根**：
 
 ```bash
 bash serverB/build.sh
-# 或：docker build -f serverB/Dockerfile.v3-C -t rsl_rl_isrc:v3-C .
+# 或：
+# docker build -f serverB/Dockerfile.v3-C -t rsl_rl_isrc:v3-C .
+# docker build -f serverB/Dockerfile.v3-D -t rsl_rl_isrc:v3-D .
 ```
 
-`rsl_rl_isrc:v3-B` 不含转发与本轮 B 日志改动，不要覆盖它。已在跑的容器要 `containers/stop` 再 `start` 才会带上新日志。
+`rsl_rl_isrc:v3-B` 不含转发与本轮 B 日志改动，不要覆盖它。已在跑的容器要 `containers/stop` 再 `start` 才会带上新日志 / TensorBoard 端口。
+
+v3-D 入口会拉起 `tensorboard --logdir $RSL_RL_ISRC_LOG_ROOT`（默认 `/workspace/logs/tensorboard`），监听 `0.0.0.0:6006`。Server A 映射 `33xxx→6006` 并返回 `tensorboard_endpoint`。训练脚本应把事件写到该目录（或依赖 `RSL_RL_ISRC_LOG_ROOT`）。

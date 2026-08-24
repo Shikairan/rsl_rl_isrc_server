@@ -25,5 +25,19 @@ if [ "${OBS_ENABLE:-1}" != "0" ]; then
   _obs_loop &
 fi
 
+TB_LOGDIR="${RSL_RL_ISRC_LOG_ROOT:-/workspace/logs/tensorboard}"
+TB_PORT="${TENSORBOARD_PORT:-6006}"
+_tb_loop() {
+  mkdir -p "$TB_LOGDIR"
+  while true; do
+    tensorboard --logdir "$TB_LOGDIR" --host 0.0.0.0 --port "$TB_PORT" || true
+    sleep 2
+  done
+}
+
+if [ "${TENSORBOARD_ENABLE:-1}" != "0" ]; then
+  _tb_loop &
+fi
+
 cd /opt/serverB
 exec python3 -m app --host 0.0.0.0 --port 8080

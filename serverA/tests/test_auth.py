@@ -15,6 +15,7 @@ def test_login_success(client) -> None:
     assert body["nfs_export_path"] == "/mnt/dockerContainer/nfs/alice"
     assert body["token"]
     assert body["obs_pub_endpoint"] is None
+    assert body["tensorboard_endpoint"] is None
 
 
 def test_login_wrong_password(client) -> None:

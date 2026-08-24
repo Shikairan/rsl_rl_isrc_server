@@ -93,6 +93,8 @@ class DockerMgr:
         host_port: int,
         obs_host_port: int,
         obs_container_port: int,
+        tb_host_port: int,
+        tb_container_port: int,
         gpu_count: int,
         cpu: str | None,
         memory: str | None,
@@ -108,6 +110,7 @@ class DockerMgr:
             "ports": {
                 "8080/tcp": (bind_ip, host_port),
                 f"{obs_container_port}/tcp": (bind_ip, obs_host_port),
+                f"{tb_container_port}/tcp": (bind_ip, tb_host_port),
             },
             "environment": {
                 "OBS_ENABLE": "1",
@@ -115,6 +118,9 @@ class DockerMgr:
                 "OBS_RELAY_HTTP": obs_relay_http_url,
                 "RSL_RL_ISRC_OBS_RELAY_URL": obs_relay_http_url,
                 "RSL_RL_ISRC_OBS_RELAY_TIMEOUT": str(obs_relay_timeout_sec),
+                "RSL_RL_ISRC_LOG_ROOT": "/workspace/logs/tensorboard",
+                "TENSORBOARD_PORT": str(tb_container_port),
+                "TENSORBOARD_ENABLE": "1",
             },
         }
         if cpu:

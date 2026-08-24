@@ -156,6 +156,17 @@ def docker_cmd(args: list[str], *, timeout: int = 120) -> CmdResult:
     return run_cmd(["sg", "docker", "-c", inner], timeout=timeout)
 
 
+def cleanup_runner_containers(*names: str) -> None:
+    """Remove test runner containers so 31xxx/32xxx/33xxx ports are free."""
+    if names:
+        docker_cmd(["rm", "-f", *names])
+        return
+    listed = docker_cmd(["ps", "-aq", "--filter", "name=^runner-"])
+    ids = [line.strip() for line in listed.stdout.splitlines() if line.strip()]
+    if ids:
+        docker_cmd(["rm", "-f", *ids])
+
+
 def pytest_cmd(*nodeids: str, timeout: int = 120) -> CmdResult:
     return run_cmd([str(CONDA_PYTEST), "-q", *nodeids], cwd=SERVER_A, timeout=timeout)
 

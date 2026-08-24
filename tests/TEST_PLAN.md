@@ -271,6 +271,30 @@
 
 ---
 
+## J. TensorBoard（v3-D + A 映射 33xxx）
+
+训练事件写到 NFS `/workspace/logs/tensorboard`。容器常驻 `tensorboard :6006`。Server A 分配 `33000–33999` 并返回 `tensorboard_endpoint`。
+
+### [T-TB-01](units/TensorBoard/v3-D镜像含tensorboard/plan.md) v3-D 镜像
+- **测**：镜像存在；`tensorboard --version`；EXPOSE 含 6006
+
+### [T-TB-02](units/TensorBoard/手工映射6006可打开/plan.md) 手工映射
+- **测**：`docker run -p 13306:6006` 后 HTTP 200
+
+### [T-TB-03](units/TensorBoard/ServerA返回TB地址/plan.md) Server A 返回地址
+- **测**：start/login/current 含 `tensorboard_endpoint`；`33xxx→6006`
+
+### [T-TB-04](units/TensorBoard/训练事件后TB可见/plan.md) 写 event
+- **测**：容器内 SummaryWriter 写一步；TB HTTP 仍 200
+
+### [T-TB-05](units/TensorBoard/alice与bob隔离/plan.md) 用户隔离
+- **测**：alice/bob `tensorboard_endpoint` 不同
+
+### [T-TB-06](units/TensorBoard/stop释放端口/plan.md) 释放端口
+- **测**：stop 后 33xxx TCP 不通
+
+---
+
 ## G. Server B（预留，尚未实现）
 
 镜像契约：ENTRYPOINT 在 **8080** 起 Server B；含 `python3` / `torchrun`。

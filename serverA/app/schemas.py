@@ -15,6 +15,7 @@ class LoginResponse(BaseModel):
     nfs_export_path: str
     server_b_endpoint: str | None = None
     obs_pub_endpoint: str | None = None
+    tensorboard_endpoint: str | None = None
 
 
 class ErrorResponse(BaseModel):
@@ -31,6 +32,7 @@ class ContainerStartRequest(BaseModel):
 class ContainerResponse(BaseModel):
     server_b_endpoint: str
     obs_pub_endpoint: str | None = None
+    tensorboard_endpoint: str | None = None
     container_status: str
     container_name: str
     nfs_mount_path: str = Field(default="/workspace")

@@ -17,7 +17,7 @@
 | 1 | 输入账号密码，点登录 | `POST /login` | **§2.2 登录** | 通行证 `token`；网盘主机和路径 | 去挂网盘 |
 | 2 | 把网盘挂到本机一个文件夹 | 本机 `mount` | **§3 挂网盘**（命令在 §3.2，Python §3.3，Qt §3.4） | 例如能打开 `/mnt/nfs/carol` | 把脚本拷进去 |
 | 3 | 把训练脚本拷进该文件夹的 `jobs/` | 不用调平台，就是拷文件 | 无（本机拷文件） | 例如本机能看见 `jobs/train.py` | 去启动环境 |
-| 4 | 点「启动训练环境」，GPU 数量填你要用的卡数 | `POST /containers/start` | **§2.3 启动环境** | **发命令的地址**、**看画面的地址** | 可先连画面 |
+| 4 | 点「启动训练环境」，GPU 数量填你要用的卡数 | `POST /containers/start` | **§2.3 启动环境** | **发命令的地址**、**看画面的地址**、**看 TensorBoard 的地址** | 可先连画面 / 打开 TB |
 | 5 | 点「连接画面」（建议先连再开训） | 用看画面的地址做 ZMQ 订阅 | **§4 看画面** | 窗口连上了；还没开训时是空的，正常 | 去开训 |
 | 6 | 点「开始训练」，脚本填 `jobs/train.py`（不要填本机绝对路径） | 对「发命令的地址」`POST /tasks/start` | **§2.5 开始训练** | 得到 `task_id`，日志开始刷，画面开始动 | 等它跑 |
 | 7 | 看日志 / 画面；要停就点「停止训练」 | 问进度、拉日志见 §2.5 表；停训 `POST /tasks/{id}/stop` | **进度/日志 §2.5**；**停训 §2.6** | 停了之后环境还在，画面停在最后一帧，可以再开训 | 用完再关环境 |
@@ -29,7 +29,7 @@ POST 的 curl / Python / Qt 写法都在第 **2** 节：先看 **§2.1 样板**�
 
 | 按钮 | 调什么 | 抄哪一节 | 干什么 |
 |------|--------|----------|--------|
-| 查看当前环境 | `GET /containers/current` | **§2.3**（返回和启动环境相同） | 已经启动过，把两个地址再取回来 |
+| 查看当前环境 | `GET /containers/current` | **§2.3**（返回和启动环境相同） | 已经启动过，把命令 / 画面 / TensorBoard 地址再取回来 |
 | 环境是否就绪 | 对发命令的地址 `GET /health` | **§2.5** 底部「训练中查询」 | 通了再开训 |
 | 卸载网盘 | 本机 `umount` | **§3.2** 最后一条 | 关环境并且不再拷文件之后再卸；训练当中不要卸 |
 
@@ -41,6 +41,8 @@ POST 的 curl / Python / Qt 写法都在第 **2** 节：先看 **§2.1 样板**�
 - 日志要在训练还在跑时拉，跑完再拉是空的。
 - 「停止训练」只停这一轮；「关闭环境」才把训练环境拆掉。下次再训要重新走第 4 步。
 - 看画面只连 **自己的** 看画面地址。连错就会看到别人的机器人。
+- TensorBoard 地址同样每人一个端口，浏览器打开 `http://{tensorboard_endpoint}`；**不要**把别人的 33xxx 当自己的。
+- 旧环境没有 TensorBoard 地址时：关闭环境，再用 `rsl_rl_isrc:v3-D` 重新启动。
 
 ---
 
@@ -59,7 +61,7 @@ POST 的 curl / Python / Qt 写法都在第 **2** 节：先看 **§2.1 样板**�
 
 通行证大约 24 小时过期，重新登录即可，已经启动的环境还在。
 
-启动环境时 `image` 填这个固定字符串（复制即可，不用理解）：`rsl_rl_isrc:v3-C`
+启动环境时 `image` 填：`rsl_rl_isrc:v3-D`（含画面转发 + TensorBoard）。只要画面、不要 TB 时仍可用 `rsl_rl_isrc:v3-C`。
 
 ---
 
@@ -174,7 +176,7 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/login"),
 ### 2.3 启动环境 `POST /containers/start`
 
 ```json
-{"image":"rsl_rl_isrc:v3-C","gpu_count":2}
+{"image":"rsl_rl_isrc:v3-D","gpu_count":2}
 ```
 
 `gpu_count` 填要用几张卡。`cpu`、`memory` 可省略。
@@ -185,33 +187,35 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/login"),
 |----------|----------------|
 | `server_b_endpoint` | **发命令的地址**，后面开训/停训/拉日志都打它 |
 | `obs_pub_endpoint` | **看画面的地址**，可视化连它 |
+| `tensorboard_endpoint` | **看 TensorBoard 的地址**，浏览器打开 `http://该地址` |
 
-已经启动过再点一次，还是这两地址，不会另开一套。
+已经启动过再点一次，还是这几个地址，不会另开一套。
 
 ```bash
 curl -sS -X POST "$A/containers/start" \
   -H "Authorization: Bearer $TOKEN" \
   -H 'content-type: application/json' \
-  -d '{"image":"rsl_rl_isrc:v3-C","gpu_count":2}'
+  -d '{"image":"rsl_rl_isrc:v3-D","gpu_count":2}'
 ```
 
 ```python
 code, started = post_json(
     f"{A}/containers/start",
-    {"image": "rsl_rl_isrc:v3-C", "gpu_count": 2},
+    {"image": "rsl_rl_isrc:v3-D", "gpu_count": 2},
     token=token,
 )
 ep = started["server_b_endpoint"]
 obs = started["obs_pub_endpoint"]
+tb = started["tensorboard_endpoint"]
 ```
 
 ```cpp
 QNetworkReply *r = postJson(nam, QUrl(kA + "/containers/start"),
-    QJsonObject{{"image", "rsl_rl_isrc:v3-C"}, {"gpu_count", 2}},
+    QJsonObject{{"image", "rsl_rl_isrc:v3-D"}, {"gpu_count", 2}},
     token);
 ```
 
-若看画面的地址是空的：先关闭环境，再启动一次。
+若看画面或 TensorBoard 的地址是空的：先关闭环境，再用 `v3-D` 启动一次。
 
 ### 2.4 关闭环境 `POST /containers/stop`
 
@@ -425,6 +429,28 @@ frame = json.loads(sock.recv().decode("utf-8"))
 
 ---
 
+## 4.1 看 TensorBoard
+
+第 4 步拿到的 `tensorboard_endpoint` 形如 `10.213.35.42:33002`。笔记本浏览器打开：
+
+```text
+http://10.213.35.42:33002
+```
+
+不要带 Server A 的 Bearer token。训练把事件写到网盘 `logs/tensorboard/`（容器内 `/workspace/logs/tensorboard`，由 `RSL_RL_ISRC_LOG_ROOT` 指定）。还没开训时页面是空的，正常。
+
+若脚本自己传了 `--log-dir /tmp/...`，这里看不到曲线——请改用默认 log root，或把 `--log-root` 指到 `/workspace/logs/tensorboard`。
+
+你也可以在已挂载的网盘上本机跑：
+
+```bash
+tensorboard --logdir /mnt/nfs/carol/logs/tensorboard --bind_all
+```
+
+和平台地址看的是同一份数据。
+
+---
+
 ## 5. 笔记本连不上时先查这些
 
 | 现象 | 先看 |
@@ -433,6 +459,7 @@ frame = json.loads(sock.recv().decode("utf-8"))
 | 登录失败 | 账号密码；是不是打到了 `8017` 而不是别的端口 |
 | 网盘挂不上 | 没装 `nfs-common`；没用登录返回的路径；`showmount -e` 没有自己那条 |
 | 开训说找不到脚本 | 脚本没拷到网盘 `jobs/`；路径写成了本机绝对路径 |
+| TensorBoard 打不开 / 是空的 | 镜像不是 `v3-D`、没 stop 再 start、防火墙没放行 33000–33999；或训练没往 `/workspace/logs/tensorboard` 写事件 |
 | 已经有一份在跑 | 先点停止训练 |
 | 有发命令的地址、画面地址是空的 | 关闭环境后再启动一次 |
 | 窗口连上了但一直没机器人 | 还没开训；或开训带了 `--no-zmq-obs`；或连错了别人的画面地址 |
