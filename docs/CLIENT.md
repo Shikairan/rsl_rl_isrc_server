@@ -151,7 +151,7 @@ PySide / PyQt 同样用 `QNetworkAccessManager.post`，头和 JSON 与上面一�
 ```
 
 成功时你要留下：`token`、`nfs_host`、`nfs_export_path`。  
-如果这个账号已经有环境在跑，还会直接带回两个地址。
+如果这个账号已经有环境在跑，还会直接带回发命令 / 看画面 / TensorBoard 三个地址。
 
 ```bash
 curl -sS -X POST "$A/login" \
@@ -172,6 +172,40 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/login"),
 ```
 
 失败一般是账号密码不对。
+
+**返回（Server A，`200`）** — 环境还没启动时：
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expires_at": "2026-08-26T07:41:00.123456Z",
+  "nfs_host": "10.250.30.115",
+  "nfs_export_path": "/mnt/dockerContainer/nfs/carol",
+  "server_b_endpoint": null,
+  "obs_pub_endpoint": null,
+  "tensorboard_endpoint": null
+}
+```
+
+**返回（Server A，`200`）** — 该账号已有环境在跑时，后三个字段会直接带上地址：
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expires_at": "2026-08-26T07:41:00.123456Z",
+  "nfs_host": "10.250.30.115",
+  "nfs_export_path": "/mnt/dockerContainer/nfs/carol",
+  "server_b_endpoint": "10.213.35.42:31002",
+  "obs_pub_endpoint": "10.213.35.42:32002",
+  "tensorboard_endpoint": "10.213.35.42:33002"
+}
+```
+
+**返回（Server A，`401`）** — 账号或密码不对：
+
+```json
+{"detail": {"error": "invalid credentials"}}
+```
 
 ### 2.3 启动环境 `POST /containers/start`
 
@@ -217,6 +251,37 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/containers/start"),
 
 若看画面或 TensorBoard 的地址是空的：先关闭环境，再用 `v3-D` 启动一次。
 
+**返回（Server A，`200`）** — 成功；`GET /containers/current` 成功时返回相同结构：
+
+```json
+{
+  "server_b_endpoint": "10.213.35.42:31002",
+  "obs_pub_endpoint": "10.213.35.42:32002",
+  "tensorboard_endpoint": "10.213.35.42:33002",
+  "container_status": "running",
+  "container_name": "runner-carol",
+  "nfs_mount_path": "/workspace"
+}
+```
+
+| 字段 | 含义 |
+|------|------|
+| `server_b_endpoint` | 发命令的地址（Server B） |
+| `obs_pub_endpoint` | 看画面的地址；旧镜像 `v3-C` 可能为 `null` |
+| `tensorboard_endpoint` | 看 TensorBoard 的地址；旧镜像可能为 `null` |
+| `container_status` | 容器状态，成功时为 `running` |
+| `container_name` | 容器名，形如 `runner-{用户名}` |
+| `nfs_mount_path` | 容器内网盘挂载点，固定 `/workspace` |
+
+**返回（Server A，常见失败）**
+
+| HTTP | 含义 | 示例 |
+|------|------|------|
+| `401` | 没带 token 或 token 无效 | `{"detail": {"error": "missing token"}}` 或 `{"detail": {"error": "invalid token"}}` |
+| `404` | `GET /containers/current` 时没有环境 | `{"detail": {"error": "no container"}}` |
+| `502` | 容器起了但 Server B 健康检查没过 | `{"detail": {"error": "..."}}` |
+| `503` | NFS 未挂载或 Docker 未启用 | `{"detail": {"error": "..."}}` |
+
 ### 2.4 关闭环境 `POST /containers/stop`
 
 ```bash
@@ -231,6 +296,18 @@ post_json(f"{A}/containers/stop", {}, token=token)
 
 ```cpp
 postJson(nam, QUrl(kA + "/containers/stop"), QJsonObject{}, token);
+```
+
+**返回（Server A，`200`）** — 成功：
+
+```json
+{"status": "stopped"}
+```
+
+**返回（Server A，`404`）** — 没有可关的环境：
+
+```json
+{"detail": {"error": "no container"}}
 ```
 
 ### 2.5 开始训练（打「发命令的地址」，不要通行证）
@@ -274,13 +351,78 @@ QNetworkReply *r = postJson(nam, QUrl(QString("http://%1/tasks/start").arg(ep)),
 
 文件找不到、路径写成了绝对路径 → 失败。已经有一份在跑 → 先停再开。
 
+**返回（Server B，`202 Accepted`）** — 开训成功：
+
+```json
+{
+  "task_id": "t-1",
+  "status": "running",
+  "started_at": "2026-08-26T07:41:00.123456+00:00"
+}
+```
+
+| 字段 | 含义 |
+|------|------|
+| `task_id` | 本轮训练 ID，形如 `t-1`、`t-2` |
+| `status` | 刚启动时为 `running` |
+| `started_at` | UTC 时间戳 |
+
+**返回（Server B，常见失败）**
+
+| HTTP | 含义 | 示例 |
+|------|------|------|
+| `400` | 脚本路径非法或文件不存在 | `{"detail": {"error": "script not found: jobs/train.py"}}` |
+| `409` | 已经有一份在跑 | `{"detail": {"error": "a task is already running"}}` |
+
 训练中查询：
 
-| 你想知道 | 调什么 |
-|----------|--------|
-| 还在跑吗 | `GET http://{发命令的地址}/tasks/{task_id}/status` |
-| 日志 | `GET http://{发命令的地址}/tasks/{task_id}/logs?since=0`（下次把返回的 `next_offset` 填回去） |
-| 环境通不通 | `GET http://{发命令的地址}/health` |
+| 你想知道 | 调什么 | 成功返回（Server B，`200`） |
+|----------|--------|------------------------------|
+| 还在跑吗 | `GET http://{发命令的地址}/tasks/{task_id}/status` | 见下方 status 示例 |
+| 日志 | `GET http://{发命令的地址}/tasks/{task_id}/logs?since=0`（下次把返回的 `next_offset` 填回去） | 见下方 logs 示例 |
+| 环境通不通 | `GET http://{发命令的地址}/health` | `{"status": "ok"}` |
+
+**`GET /tasks/{task_id}/status` 返回示例**
+
+训练中：
+
+```json
+{
+  "task_id": "t-1",
+  "status": "running",
+  "exit_code": null,
+  "started_at": "2026-08-26T07:41:00.123456+00:00",
+  "finished_at": null
+}
+```
+
+正常结束：
+
+```json
+{
+  "task_id": "t-1",
+  "status": "succeeded",
+  "exit_code": 0,
+  "started_at": "2026-08-26T07:41:00.123456+00:00",
+  "finished_at": "2026-08-26T07:45:12.654321+00:00"
+}
+```
+
+`status` 还可能为 `stopped`（手动停训）或 `failed`（脚本非零退出）。
+
+**`GET /tasks/{task_id}/logs?since=0` 返回示例**
+
+```json
+{
+  "next_offset": 256,
+  "lines": [
+    "rank=0 local_rank=0 device=cuda:0",
+    "epoch=1/3 loss=0.902094"
+  ]
+}
+```
+
+下次请求用 `?since=256`。训练结束一段时间后日志会释放，再拉会 `404`：`{"detail": {"error": "logs released"}}`。
 
 ### 2.6 停止训练 `POST /tasks/{task_id}/stop`
 
@@ -297,6 +439,18 @@ post_json(f"http://{ep}/tasks/{task_id}/stop", {})
 
 ```cpp
 postJson(nam, QUrl(QString("http://%1/tasks/%2/stop").arg(ep, taskId)), QJsonObject{});
+```
+
+**返回（Server B，`200`）** — 成功：
+
+```json
+{"status": "stopped"}
+```
+
+**返回（Server B，`404`）** — `task_id` 不存在：
+
+```json
+{"detail": {"error": "task not found"}}
 ```
 
 ---

@@ -108,3 +108,66 @@
 2026-08-24 10:53:07,533 INFO app.container_service: container stop username=carol name=runner-carol
 2026-08-24 10:53:10,136 INFO server_a.access: POST /containers/stop 200 2631.1ms user=carol
 2026-08-24 15:14:56,477 INFO uvicorn.error: Shutting down
+2026-08-24 17:39:55,085 INFO server_a: logging ready dir=/home/isrc5090/149server/serverA/logs level=INFO access=True
+2026-08-24 17:39:55,292 INFO uvicorn.error: Started server process [1393909]
+2026-08-24 17:39:55,292 INFO uvicorn.error: Waiting for application startup.
+2026-08-24 17:39:55,296 INFO app.nfs: nfs.enabled=false, skip auto-mount
+2026-08-24 17:39:55,299 INFO server_a: server A ready nfs.enabled=False docker.enabled=True users=['alice', 'bob', 'carol', 'dave', 'eve', 'frank'] db=/home/isrc5090/149server/serverA/data/registry.db log_dir=/home/isrc5090/149server/serverA/logs
+2026-08-24 17:39:55,299 INFO uvicorn.error: Application startup complete.
+2026-08-24 17:39:55,301 INFO uvicorn.error: Uvicorn running on http://0.0.0.0:8017 (Press CTRL+C to quit)
+/home/isrc5090/miniconda3/envs/serverA/lib/python3.11/site-packages/jwt/api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 9 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  return self._jws.encode(
+2026-08-25 09:46:14,307 INFO app.routers.auth: login ok username=carol
+2026-08-25 09:46:14,308 INFO server_a.access: POST /login 200 384.9ms user=-
+/home/isrc5090/miniconda3/envs/serverA/lib/python3.11/site-packages/jwt/api_jwt.py:368: InsecureKeyLengthWarning: The HMAC key is 9 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  decoded = self.decode_complete(
+/home/isrc5090/miniconda3/envs/serverA/lib/python3.11/site-packages/jwt/api_jwt.py:368: InsecureKeyLengthWarning: The HMAC key is 9 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  decoded = self.decode_complete(
+2026-08-25 09:46:24,751 INFO app.container_service: container start username=carol image=rsl_rl_isrc:v3-C gpu_count=2
+2026-08-25 09:46:27,178 INFO httpx: HTTP Request: GET http://10.213.35.42:31000/health "HTTP/1.1 200 OK"
+2026-08-25 09:46:27,180 INFO app.container_service: container started username=carol name=runner-carol port=31000 obs_port=32000 tb_port=33000
+2026-08-25 09:46:27,181 INFO server_a.access: POST /containers/start 200 2498.9ms user=carol
+2026-08-25 09:47:57,170 INFO app.container_service: container stop username=carol name=runner-carol
+2026-08-25 09:47:58,401 INFO server_a.access: POST /containers/stop 200 1233.9ms user=carol
+/home/isrc5090/miniconda3/envs/serverA/lib/python3.11/site-packages/jwt/api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 9 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  return self._jws.encode(
+2026-08-25 09:52:16,009 INFO server_a.access: POST /login 200 276.8ms user=-
+2026-08-25 09:52:16,009 INFO app.routers.auth: login ok username=carol
+2026-08-25 09:52:23,356 INFO app.container_service: container start username=carol image=rsl_rl_isrc:v3-C gpu_count=2
+2026-08-25 09:52:25,718 INFO httpx: HTTP Request: GET http://10.213.35.42:31000/health "HTTP/1.1 200 OK"
+2026-08-25 09:52:25,720 INFO app.container_service: container started username=carol name=runner-carol port=31000 obs_port=32000 tb_port=33000
+2026-08-25 09:52:25,721 INFO server_a.access: POST /containers/start 200 2375.8ms user=carol
+2026-08-25 09:53:15,272 INFO app.container_service: container stop username=carol name=runner-carol
+2026-08-25 09:53:16,421 INFO server_a.access: POST /containers/stop 200 1152.1ms user=carol
+2026-08-25 10:21:13,422 INFO app.routers.auth: login ok username=carol
+2026-08-25 10:21:13,425 INFO server_a.access: POST /login 200 326.1ms user=-
+2026-08-25 10:21:25,825 INFO app.container_service: container start username=carol image=rsl_rl_isrc:v3-C gpu_count=2
+2026-08-25 10:21:28,211 INFO httpx: HTTP Request: GET http://10.213.35.42:31000/health "HTTP/1.1 200 OK"
+2026-08-25 10:21:28,213 INFO app.container_service: container started username=carol name=runner-carol port=31000 obs_port=32000 tb_port=33000
+2026-08-25 10:21:28,214 INFO server_a.access: POST /containers/start 200 2398.2ms user=carol
+2026-08-25 10:25:06,457 INFO app.container_service: container stop username=carol name=runner-carol
+2026-08-25 10:25:07,754 INFO server_a.access: POST /containers/stop 200 1298.4ms user=carol
+2026-08-25 16:18:52,195 INFO app.routers.auth: login ok username=carol
+2026-08-25 16:18:52,196 INFO server_a.access: POST /login 200 317.6ms user=-
+2026-08-25 16:18:59,299 INFO app.container_service: container start username=carol image=rsl_rl_isrc:v3-C gpu_count=2
+2026-08-25 16:19:01,657 INFO httpx: HTTP Request: GET http://10.213.35.42:31000/health "HTTP/1.1 200 OK"
+2026-08-25 16:19:01,661 INFO app.container_service: container started username=carol name=runner-carol port=31000 obs_port=32000 tb_port=33000
+2026-08-25 16:19:01,662 INFO server_a.access: POST /containers/start 200 2369.5ms user=carol
+2026-08-25 16:21:14,610 INFO app.container_service: container stop username=carol name=runner-carol
+2026-08-25 16:21:15,936 INFO server_a.access: POST /containers/stop 200 1328.9ms user=carol
+2026-08-25 16:32:46,980 INFO server_a.access: POST /login 200 330.5ms user=-
+2026-08-25 16:32:46,979 INFO app.routers.auth: login ok username=carol
+2026-08-25 16:32:55,660 INFO app.container_service: container start username=carol image=rsl_rl_isrc:v3-D gpu_count=2
+2026-08-25 16:32:58,030 INFO httpx: HTTP Request: GET http://10.213.35.42:31000/health "HTTP/1.1 200 OK"
+2026-08-25 16:32:58,033 INFO app.container_service: container started username=carol name=runner-carol port=31000 obs_port=32000 tb_port=33000
+2026-08-25 16:32:58,034 INFO server_a.access: POST /containers/start 200 2403.5ms user=carol
+2026-08-25 16:37:24,080 INFO app.container_service: container stop username=carol name=runner-carol
+2026-08-25 16:37:25,381 INFO server_a.access: POST /containers/stop 200 1303.3ms user=carol
+2026-08-26 14:54:19,593 INFO app.routers.auth: login ok username=carol
+2026-08-26 14:54:19,616 INFO server_a.access: POST /login 200 387.8ms user=-
+2026-08-26 14:54:27,174 INFO app.container_service: container start username=carol image=rsl_rl_isrc:v3-D gpu_count=2
+2026-08-26 14:54:29,800 INFO httpx: HTTP Request: GET http://10.213.35.42:31000/health "HTTP/1.1 200 OK"
+2026-08-26 14:54:29,803 INFO app.container_service: container started username=carol name=runner-carol port=31000 obs_port=32000 tb_port=33000
+2026-08-26 14:54:29,805 INFO server_a.access: POST /containers/start 200 2657.4ms user=carol
+2026-08-26 14:55:10,461 INFO app.container_service: container stop username=carol name=runner-carol
+2026-08-26 14:55:12,236 INFO server_a.access: POST /containers/stop 200 1777.0ms user=carol
