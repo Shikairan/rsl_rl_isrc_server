@@ -1,0 +1,10 @@
+# T-G-05 2026-08-26 16:48:10 +0800
+passed=True
+
+## step 1 PASS
+cmd: sudo -S -p '' bash -lc 'echo group-probe | tee /mnt/nfs/groups/team-alpha/probe.txt'
+PASS；退出码 0；输出：group-probe
+
+## step 2 PASS
+cmd: sg docker -c 'docker run --rm -v /mnt/nfs/alice:/workspace -v /mnt/nfs/groups/team-alpha:/workspace/groups/team-alpha pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime bash -lc '"'"'cat /workspace/groups/team-alpha/probe.txt'"'"''
+PASS；退出码 0；输出：group-probe

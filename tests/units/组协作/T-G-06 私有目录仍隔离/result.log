@@ -1,0 +1,10 @@
+# T-G-06 2026-08-26 16:48:01 +0800
+passed=True
+
+## step 1 PASS
+cmd: sudo -S -p '' bash -lc 'echo bob-private | tee /mnt/nfs/bob/bob_private.txt'
+PASS；退出码 0；输出：bob-private
+
+## step 2 PASS
+cmd: sg docker -c 'docker run --rm -v /mnt/nfs/alice:/workspace pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime bash -lc '"'"'test ! -f /workspace/bob_private.txt && echo isolated'"'"''
+PASS；退出码 0；输出：isolated

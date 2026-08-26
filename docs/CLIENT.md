@@ -150,7 +150,7 @@ PySide / PyQt 同样用 `QNetworkAccessManager.post`，头和 JSON 与上面一�
 {"username":"carol","password":"carol-dev"}
 ```
 
-成功时你要留下：`token`、`nfs_host`、`nfs_export_path`。  
+成功时你要留下：`token`、`nfs_host`、`nfs_export_path`；若属协作组还有 `groups` 数组。  
 如果这个账号已经有环境在跑，还会直接带回发命令 / 看画面 / TensorBoard 三个地址。
 
 ```bash
@@ -173,7 +173,7 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/login"),
 
 失败一般是账号密码不对。
 
-**返回（Server A，`200`）** — 环境还没启动时：
+**返回（Server A，`200`）** — 无组、环境未启动示例：
 
 ```json
 {
@@ -181,25 +181,36 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/login"),
   "expires_at": "2026-08-26T07:41:00.123456Z",
   "nfs_host": "10.250.30.115",
   "nfs_export_path": "/mnt/dockerContainer/nfs/carol",
+  "groups": [],
   "server_b_endpoint": null,
   "obs_pub_endpoint": null,
   "tensorboard_endpoint": null
 }
 ```
 
-**返回（Server A，`200`）** — 该账号已有环境在跑时，后三个字段会直接带上地址：
+**返回（Server A，`200`）** — alice 属 `team-alpha` 示例：
 
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "expires_at": "2026-08-26T07:41:00.123456Z",
   "nfs_host": "10.250.30.115",
-  "nfs_export_path": "/mnt/dockerContainer/nfs/carol",
-  "server_b_endpoint": "10.213.35.42:31002",
-  "obs_pub_endpoint": "10.213.35.42:32002",
-  "tensorboard_endpoint": "10.213.35.42:33002"
+  "nfs_export_path": "/mnt/dockerContainer/nfs/alice",
+  "groups": [
+    {
+      "group_id": "team-alpha",
+      "nfs_host": "10.250.30.115",
+      "nfs_export_path": "/mnt/dockerContainer/nfs/groups/team-alpha",
+      "local_mount_hint": "/mnt/nfs/groups/team-alpha"
+    }
+  ],
+  "server_b_endpoint": null,
+  "obs_pub_endpoint": null,
+  "tensorboard_endpoint": null
 }
 ```
+
+一人可属多个组时，`groups` 里会有多项。无组时 `groups` 为 `[]`。
 
 **返回（Server A，`401`）** — 账号或密码不对：
 
@@ -222,6 +233,7 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/login"),
 | `server_b_endpoint` | **发命令的地址**，后面开训/停训/拉日志都打它 |
 | `obs_pub_endpoint` | **看画面的地址**，可视化连它 |
 | `tensorboard_endpoint` | **看 TensorBoard 的地址**，浏览器打开 `http://该地址` |
+| `group_mounts` | 容器内协作目录列表；有组时含 `group_id` 与 `container_path`（如 `/workspace/groups/team-alpha`） |
 
 已经启动过再点一次，还是这几个地址，不会另开一套。
 
@@ -260,7 +272,24 @@ QNetworkReply *r = postJson(nam, QUrl(kA + "/containers/start"),
   "tensorboard_endpoint": "10.213.35.42:33002",
   "container_status": "running",
   "container_name": "runner-carol",
-  "nfs_mount_path": "/workspace"
+  "nfs_mount_path": "/workspace",
+  "group_mounts": []
+}
+```
+
+有组用户示例（alice / `team-alpha`）：
+
+```json
+{
+  "server_b_endpoint": "10.213.35.42:31000",
+  "obs_pub_endpoint": "10.213.35.42:32000",
+  "tensorboard_endpoint": "10.213.35.42:33000",
+  "container_status": "running",
+  "container_name": "runner-alice",
+  "nfs_mount_path": "/workspace",
+  "group_mounts": [
+    {"group_id": "team-alpha", "container_path": "/workspace/groups/team-alpha"}
+  ]
 }
 ```
 
@@ -481,6 +510,8 @@ sudo ip rule add to 10.250.30.115 lookup main pref 8000
 
 ### 3.2 挂上（每次登录后，用返回值填）
 
+**私有目录：**
+
 ```bash
 NFS_HOST=10.250.30.115                          # 登录返回的 nfs_host
 NFS_EXPORT=/mnt/dockerContainer/nfs/carol       # 登录返回的 nfs_export_path
@@ -488,12 +519,31 @@ MNT=/mnt/nfs/carol                              # 本机文件夹，自己定
 
 sudo mkdir -p "$MNT"
 sudo mount -t nfs -o vers=4 "$NFS_HOST:$NFS_EXPORT" "$MNT"
+```
 
+**协作目录（`groups` 非空时，每组挂一条）：**
+
+```bash
+# 来自 login 返回的 groups[0]（多人多组则循环）
+G_HOST=10.250.30.115
+G_EXPORT=/mnt/dockerContainer/nfs/groups/team-alpha
+G_MNT=/mnt/nfs/groups/team-alpha
+
+sudo mkdir -p "$G_MNT"
+sudo mount -t nfs -o vers=4 "$G_HOST:$G_EXPORT" "$G_MNT"
+```
+
+协作脚本拷到 `G_MNT/jobs/`；开训路径写 `groups/team-alpha/jobs/train.py`（相对容器 `/workspace`）。  
+日志、checkpoint、TensorBoard 仍放私有 `MNT/logs/`、`MNT/jobs/`，不要写到协作目录。
+
+```bash
 # 确认挂上了
 findmnt "$MNT"
+findmnt "$G_MNT"    # 有组时
 ls "$MNT/jobs"
 
 # 用完、环境已关闭后再卸
+sudo umount "$G_MNT"
 sudo umount "$MNT"
 ```
 

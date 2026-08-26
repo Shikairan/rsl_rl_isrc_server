@@ -92,4 +92,18 @@ echo "===== T-E2E-01 端到端/登录到任务全链路 ====="
 python3 "$ROOT/端到端/登录到任务全链路/run.py" || fail=1
 echo "===== T-E2E-02 端到端/同一容器跑G1_DDP ====="
 python3 "$ROOT/端到端/同一容器跑G1_DDP/run.py" || fail=1
+echo "===== T-G-01 组协作/login返回groups ====="
+python3 "$ROOT/组协作/T-G-01 login返回groups/run.py" || fail=1
+echo "===== T-G-02 组协作/carol与eve组信息 ====="
+python3 "$ROOT/组协作/T-G-02 carol与eve组信息/run.py" || fail=1
+echo "===== T-G-03 组协作/start双挂载mock ====="
+python3 "$ROOT/组协作/T-G-03 start双挂载mock/run.py" || fail=1
+echo "===== T-G-04 组协作/无组与多组配置 ====="
+python3 "$ROOT/组协作/T-G-04 无组与多组配置/run.py" || fail=1
+echo "===== T-G-05 组协作/容器看见组文件 ====="
+python3 "$ROOT/组协作/T-G-05 容器看见组文件/run.py" || fail=1
+echo "===== T-G-06 组协作/私有目录仍隔离 ====="
+python3 "$ROOT/组协作/T-G-06 私有目录仍隔离/run.py" || fail=1
+echo "===== T-G-07 组协作/跨组不可见 ====="
+python3 "$ROOT/组协作/T-G-07 跨组不可见/run.py" || fail=1
 exit "$fail"

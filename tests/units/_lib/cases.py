@@ -8,6 +8,10 @@ import time
 from pathlib import Path
 
 from common import (
+    GROUP_ALPHA_EXPORT,
+    GROUP_ALPHA_MNT,
+    GROUP_BETA_EXPORT,
+    GROUP_BETA_MNT,
     ALICE_EXPORT,
     ALICE_MNT,
     BOB_EXPORT,
@@ -22,6 +26,8 @@ from common import (
     pytest_cmd,
     remount_alice,
     remount_bob,
+    remount_group_alpha,
+    remount_group_beta,
     run_cmd,
     ssh_nfs,
     sudo_cmd,
@@ -1193,6 +1199,93 @@ def t_e2e_02(r: CaseRunner) -> None:
         docker_cmd(["rm", "-f", "runner-alice"])
 
 
+def t_g_01(r: CaseRunner) -> None:
+    p = pytest_cmd("tests/test_groups.py::test_login_alice_has_team_alpha")
+    r.record_cmd(1, p, p.returncode == 0)
+
+
+def t_g_02(r: CaseRunner) -> None:
+    p = pytest_cmd("tests/test_groups.py::test_login_carol_team_beta_eve_empty")
+    r.record_cmd(1, p, p.returncode == 0)
+
+
+def t_g_03(r: CaseRunner) -> None:
+    p = pytest_cmd("tests/test_groups.py::test_start_alice_two_volume_binds")
+    r.record_cmd(1, p, p.returncode == 0)
+
+
+def t_g_04(r: CaseRunner) -> None:
+    p = pytest_cmd("tests/test_groups.py::test_start_eve_no_group_mounts")
+    r.record_cmd(1, p, p.returncode == 0)
+    p2 = pytest_cmd("tests/test_groups.py::test_groups_for_user_multi_group")
+    r.record_cmd(2, p2, p2.returncode == 0)
+
+
+def t_g_05(r: CaseRunner) -> None:
+    remount_alice()
+    remount_group_alpha()
+    p = sudo_cmd(["bash", "-lc", f"echo group-probe | tee {GROUP_ALPHA_MNT}/probe.txt"])
+    r.record_cmd(1, p, p.returncode == 0)
+    p = docker_cmd(
+        [
+            "run",
+            "--rm",
+            "-v",
+            f"{ALICE_MNT}:/workspace",
+            "-v",
+            f"{GROUP_ALPHA_MNT}:/workspace/groups/team-alpha",
+            "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime",
+            "bash",
+            "-lc",
+            "cat /workspace/groups/team-alpha/probe.txt",
+        ],
+        timeout=120,
+    )
+    r.record_cmd(2, p, p.returncode == 0 and "group-probe" in p.stdout)
+
+
+def t_g_06(r: CaseRunner) -> None:
+    remount_alice()
+    remount_bob()
+    p = sudo_cmd(["bash", "-lc", f"echo bob-private | tee {BOB_MNT}/bob_private.txt"])
+    r.record_cmd(1, p, p.returncode == 0)
+    p = docker_cmd(
+        [
+            "run",
+            "--rm",
+            "-v",
+            f"{ALICE_MNT}:/workspace",
+            "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime",
+            "bash",
+            "-lc",
+            "test ! -f /workspace/bob_private.txt && echo isolated",
+        ],
+        timeout=120,
+    )
+    r.record_cmd(2, p, p.returncode == 0 and "isolated" in p.combined)
+
+
+def t_g_07(r: CaseRunner) -> None:
+    remount_group_alpha()
+    remount_group_beta()
+    p = sudo_cmd(["bash", "-lc", f"echo alpha-only | tee {GROUP_ALPHA_MNT}/alpha_only.txt"])
+    r.record_cmd(1, p, p.returncode == 0)
+    p = docker_cmd(
+        [
+            "run",
+            "--rm",
+            "-v",
+            f"{GROUP_BETA_MNT}:/workspace/groups/team-beta",
+            "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime",
+            "bash",
+            "-lc",
+            "test ! -f /workspace/groups/team-alpha/alpha_only.txt && echo cross-isolated",
+        ],
+        timeout=120,
+    )
+    r.record_cmd(2, p, p.returncode == 0 and "cross-isolated" in p.combined)
+
+
 CASES = {
     "T-NFS-01": t_nfs_01,
     "T-NFS-02": t_nfs_02,
@@ -1233,4 +1326,11 @@ CASES = {
     "T-B-05": t_b_05,
     "T-E2E-01": t_e2e_01,
     "T-E2E-02": t_e2e_02,
+    "T-G-01": t_g_01,
+    "T-G-02": t_g_02,
+    "T-G-03": t_g_03,
+    "T-G-04": t_g_04,
+    "T-G-05": t_g_05,
+    "T-G-06": t_g_06,
+    "T-G-07": t_g_07,
 }

@@ -28,6 +28,10 @@ ALICE_EXPORT = f"{NFS_HOST}:/mnt/dockerContainer/nfs/alice"
 BOB_EXPORT = f"{NFS_HOST}:/mnt/dockerContainer/nfs/bob"
 ALICE_MNT = "/mnt/nfs/alice"
 BOB_MNT = "/mnt/nfs/bob"
+GROUP_ALPHA_EXPORT = f"{NFS_HOST}:/mnt/dockerContainer/nfs/groups/team-alpha"
+GROUP_BETA_EXPORT = f"{NFS_HOST}:/mnt/dockerContainer/nfs/groups/team-beta"
+GROUP_ALPHA_MNT = "/mnt/nfs/groups/team-alpha"
+GROUP_BETA_MNT = "/mnt/nfs/groups/team-beta"
 TZ = timezone(timedelta(hours=8))
 
 
@@ -454,6 +458,48 @@ def remount_bob() -> CmdResult:
             "vers=4,clientaddr=10.213.35.42",
             BOB_EXPORT,
             BOB_MNT,
+        ],
+        timeout=30,
+    )
+
+
+def remount_group_alpha() -> CmdResult:
+    ensure_nfs_route()
+    sudo_cmd(["mkdir", "-p", GROUP_ALPHA_MNT])
+    src = run_cmd(["findmnt", "-n", "-o", "SOURCE", GROUP_ALPHA_MNT])
+    if src.returncode == 0 and NFS_HOST in src.stdout:
+        return run_cmd(["ls", GROUP_ALPHA_MNT])
+    sudo_cmd(["umount", "-l", GROUP_ALPHA_MNT])
+    return sudo_cmd(
+        [
+            "mount",
+            "-t",
+            "nfs",
+            "-o",
+            "vers=4,clientaddr=10.213.35.42",
+            GROUP_ALPHA_EXPORT,
+            GROUP_ALPHA_MNT,
+        ],
+        timeout=30,
+    )
+
+
+def remount_group_beta() -> CmdResult:
+    ensure_nfs_route()
+    sudo_cmd(["mkdir", "-p", GROUP_BETA_MNT])
+    src = run_cmd(["findmnt", "-n", "-o", "SOURCE", GROUP_BETA_MNT])
+    if src.returncode == 0 and NFS_HOST in src.stdout:
+        return run_cmd(["ls", GROUP_BETA_MNT])
+    sudo_cmd(["umount", "-l", GROUP_BETA_MNT])
+    return sudo_cmd(
+        [
+            "mount",
+            "-t",
+            "nfs",
+            "-o",
+            "vers=4,clientaddr=10.213.35.42",
+            GROUP_BETA_EXPORT,
+            GROUP_BETA_MNT,
         ],
         timeout=30,
     )

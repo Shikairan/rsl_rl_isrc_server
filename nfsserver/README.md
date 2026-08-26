@@ -10,7 +10,10 @@ python nfsctl.py showmount
 python nfsctl.py status
 python nfsctl.py apply
 python nfsctl.py add-user gina    # 改本地 config 后需再 apply；已有 alice/bob/carol/dave/eve/frank
+python nfsctl.py sync-groups      # 从 serverA/config/groups.yaml 同步组导出
 ```
+
+组协作目录由 `serverA/config/groups.yaml` 定义；`sync-groups` 后再 `apply`。
 
 用户目录定义在 `config/users.yaml`。SSH 账号读上级目录 `115ssh`，不要写进本仓库脚本。
 客户端挂载与调用见仓库 [`docs/CLIENT.md`](../docs/CLIENT.md)。
