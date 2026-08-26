@@ -13,10 +13,10 @@ import httpx
 from app.config import Settings, UserRecord
 from app.docker_mgr import DockerError, DockerMgr
 from app.models import ContainerRecord
-from app.nfs import NfsError, ensure_user_nfs
+from app.nfs import NfsError, ensure_user_groups_nfs, ensure_user_nfs
 from app.ports import PortPoolExhausted
 from app.registry import Registry
-from app.schemas import ContainerResponse, ContainerStartRequest
+from app.schemas import ContainerResponse, ContainerStartRequest, GroupMountInfo
 
 logger = logging.getLogger(__name__)
 
@@ -91,9 +91,6 @@ class ContainerService:
                 self._locks[username] = lock
             return lock
 
-    def _ensure_workspace(self, user: UserRecord) -> None:
-        ensure_user_nfs(user, auto_mount=self.settings.server.nfs.enabled)
-
     def _endpoint(self, host_port: int) -> str:
         return f"{self.settings.server.internal_ip}:{host_port}"
 
@@ -107,7 +104,26 @@ class ContainerService:
             return None
         return self._endpoint(tb_host_port)
 
-    def _to_response(self, rec: ContainerRecord) -> ContainerResponse:
+    def _ensure_workspace(self, username: str, user: UserRecord) -> None:
+        auto = self.settings.server.nfs.enabled
+        ensure_user_nfs(user, auto_mount=auto)
+        ensure_user_groups_nfs(self.settings, username, auto_mount=auto)
+
+    def _group_volumes(self, username: str) -> list[tuple[str, str]]:
+        prefix = self.settings.server.container_groups_prefix.rstrip("/")
+        return [
+            (group.local_mount_path, f"{prefix}/{group_id}")
+            for group_id, group in self.settings.groups_for_user(username)
+        ]
+
+    def _group_mounts_response(self, username: str) -> list[GroupMountInfo]:
+        prefix = self.settings.server.container_groups_prefix.rstrip("/")
+        return [
+            GroupMountInfo(group_id=group_id, container_path=f"{prefix}/{group_id}")
+            for group_id, _group in self.settings.groups_for_user(username)
+        ]
+
+    def _to_response(self, rec: ContainerRecord, username: str) -> ContainerResponse:
         return ContainerResponse(
             server_b_endpoint=self._endpoint(rec.host_port),
             obs_pub_endpoint=self._obs_endpoint(rec.obs_host_port),
@@ -115,13 +131,14 @@ class ContainerService:
             container_status=rec.status,
             container_name=rec.container_name,
             nfs_mount_path=self.settings.server.container_workspace,
+            group_mounts=self._group_mounts_response(username),
         )
 
     def start(self, username: str, req: ContainerStartRequest) -> ContainerResponse:
         user = self.settings.users[username]
         with self._user_lock(username):
             try:
-                self._ensure_workspace(user)
+                self._ensure_workspace(username, user)
             except NfsError as exc:
                 raise
             existing = self.registry.get(username)
@@ -139,7 +156,7 @@ class ContainerService:
                         existing.obs_host_port,
                         existing.tb_host_port,
                     )
-                    return self._to_response(existing)
+                    return self._to_response(existing, username)
                 # leftover / stopped / missing → rm -f and recreate
                 self.docker.remove_force(existing.container_id)
                 self.docker.remove_force(name)
@@ -190,6 +207,7 @@ class ContainerService:
                     name=name,
                     workspace_host=user.local_mount_path,
                     workspace_container=self.settings.server.container_workspace,
+                    group_volumes=self._group_volumes(username),
                     bind_ip=self.settings.server.internal_ip,
                     host_port=host_port,
                     obs_host_port=obs_host_port,
@@ -238,7 +256,7 @@ class ContainerService:
                 obs_host_port,
                 tb_host_port,
             )
-            return self._to_response(rec)
+            return self._to_response(rec, username)
 
     def current(self, username: str) -> ContainerResponse:
         rec = self.registry.get(username)
@@ -251,7 +269,7 @@ class ContainerService:
             raise ContainerNotFound()
         rec.status = "running"
         self.registry.upsert(rec)
-        return self._to_response(rec)
+        return self._to_response(rec, username)
 
     def stop(self, username: str) -> None:
         rec = self.registry.get(username)

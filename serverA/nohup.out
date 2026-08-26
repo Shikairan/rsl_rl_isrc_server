@@ -171,3 +171,10 @@
 2026-08-26 14:54:29,805 INFO server_a.access: POST /containers/start 200 2657.4ms user=carol
 2026-08-26 14:55:10,461 INFO app.container_service: container stop username=carol name=runner-carol
 2026-08-26 14:55:12,236 INFO server_a.access: POST /containers/stop 200 1777.0ms user=carol
+2026-08-26 16:57:02,300 INFO server_a: logging ready dir=/home/isrc5090/149server/serverA/logs level=INFO access=True
+2026-08-26 16:57:02,474 INFO uvicorn.error: Started server process [3844109]
+2026-08-26 16:57:02,474 INFO uvicorn.error: Waiting for application startup.
+2026-08-26 16:57:02,478 INFO app.nfs: nfs.enabled=false, skip auto-mount
+2026-08-26 16:57:02,479 INFO server_a: server A ready nfs.enabled=False docker.enabled=True users=['alice', 'bob', 'carol', 'dave', 'eve', 'frank'] db=/home/isrc5090/149server/serverA/data/registry.db log_dir=/home/isrc5090/149server/serverA/logs
+2026-08-26 16:57:02,479 INFO uvicorn.error: Application startup complete.
+2026-08-26 16:57:02,481 INFO uvicorn.error: Uvicorn running on http://0.0.0.0:8017 (Press CTRL+C to quit)

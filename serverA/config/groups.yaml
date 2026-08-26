@@ -1,0 +1,12 @@
+# 组协作 NFS 目录（唯一配置源）。nfsserver: python nfsctl.py sync-groups && apply
+groups:
+  team-alpha:
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/groups/team-alpha"
+    local_mount_path: "/mnt/nfs/groups/team-alpha"
+    members: [alice, bob]
+  team-beta:
+    nfs_host: "10.250.30.115"
+    nfs_export_path: "/mnt/dockerContainer/nfs/groups/team-beta"
+    local_mount_path: "/mnt/nfs/groups/team-beta"
+    members: [carol, dave]

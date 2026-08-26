@@ -39,6 +39,10 @@ def docker_client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient
         ws = tmp_path / "alice-ws"
         ws.mkdir()
         test_client.app.state.settings.users["alice"].local_mount_path = str(ws)
+        for group_id, group in test_client.app.state.settings.groups.items():
+            gdir = tmp_path / "groups" / group_id
+            gdir.mkdir(parents=True, exist_ok=True)
+            group.local_mount_path = str(gdir)
         docker = test_client.app.state.docker
         docker._client = MagicMock()
         docker.inspect = MagicMock(return_value=None)

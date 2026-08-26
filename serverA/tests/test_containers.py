@@ -30,6 +30,9 @@ def test_start_success(docker_client) -> None:
     assert body["container_name"] == "runner-alice"
     assert body["container_status"] == "running"
     assert body["nfs_mount_path"] == "/workspace"
+    assert body["group_mounts"] == [
+        {"group_id": "team-alpha", "container_path": "/workspace/groups/team-alpha"}
+    ]
     assert body["server_b_endpoint"].startswith("10.213.35.42:")
     assert body["obs_pub_endpoint"].startswith("10.213.35.42:32")
     assert body["tensorboard_endpoint"].startswith("10.213.35.42:33")

@@ -20,7 +20,7 @@ def _settings(log_dir: Path, *, enabled: bool = True, console: bool = False) -> 
             backup_count=2,
         )
     )
-    return Settings(server=server, users={})
+    return Settings(server=server, users={}, groups={})
 
 
 def test_setup_writes_app_and_access_logs(tmp_path: Path, monkeypatch) -> None:

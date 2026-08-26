@@ -89,6 +89,7 @@ class DockerMgr:
         name: str,
         workspace_host: str,
         workspace_container: str,
+        group_volumes: list[tuple[str, str]] | None = None,
         bind_ip: str,
         host_port: int,
         obs_host_port: int,
@@ -123,6 +124,8 @@ class DockerMgr:
                 "TENSORBOARD_ENABLE": "1",
             },
         }
+        for host_path, container_path in group_volumes or []:
+            kwargs["volumes"][host_path] = {"bind": container_path, "mode": "rw"}
         if cpu:
             kwargs["nano_cpus"] = int(float(cpu) * 1_000_000_000)
         if memory:

@@ -11,7 +11,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from app.config import Settings, UserRecord
+from app.config import GroupRecord, Settings, UserRecord
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +107,50 @@ def ensure_user_nfs(user: UserRecord, *, auto_mount: bool) -> None:
     )
 
 
+def mount_group(group: GroupRecord) -> None:
+    local = Path(group.local_mount_path)
+    local.mkdir(parents=True, exist_ok=True)
+    if is_mount_point(group.local_mount_path):
+        logger.info("nfs already mounted: %s", group.local_mount_path)
+        return
+    source = f"{group.nfs_host}:{group.nfs_export_path}"
+    cmd = ["mount", "-t", "nfs", "-o", "vers=4", source, group.local_mount_path]
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        raise NfsError(
+            f"mount failed {source} -> {group.local_mount_path}: {result.stderr.strip()}"
+        )
+    logger.info("nfs mounted %s -> %s", source, group.local_mount_path)
+
+
+def remount_group_if_missing(group: GroupRecord) -> None:
+    if not is_mount_point(group.local_mount_path):
+        mount_group(group)
+
+
+def ensure_group_nfs(group: GroupRecord, *, auto_mount: bool) -> None:
+    Path(group.local_mount_path).mkdir(parents=True, exist_ok=True)
+    if auto_mount:
+        remount_group_if_missing(group)
+    if is_nfs_mount(group.local_mount_path):
+        return
+    expected = f"{group.nfs_host}:{group.nfs_export_path}"
+    logger.warning(
+        "NFS not mounted path=%s expected=%s; refusing container start",
+        group.local_mount_path,
+        expected,
+    )
+    raise NfsError(
+        f"NFS not mounted at {group.local_mount_path}; "
+        f"refusing to start container (expected {expected})"
+    )
+
+
+def ensure_user_groups_nfs(settings: Settings, username: str, *, auto_mount: bool) -> None:
+    for _group_id, group in settings.groups_for_user(username):
+        ensure_group_nfs(group, auto_mount=auto_mount)
+
+
 def mount_all_users(settings: Settings) -> None:
     if not settings.server.nfs.enabled:
         logger.info("nfs.enabled=false, skip auto-mount")
@@ -117,5 +161,10 @@ def mount_all_users(settings: Settings) -> None:
             mount_user(user)
         except NfsError as exc:
             failures.append(f"{name}: {exc}")
+    for group_id, group in settings.groups.items():
+        try:
+            mount_group(group)
+        except NfsError as exc:
+            failures.append(f"group {group_id}: {exc}")
     if failures:
         raise NfsError("NFS mount failed:\n" + "\n".join(failures))

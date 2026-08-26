@@ -10,6 +10,7 @@ server:
   tensorboard_container_port: 6006
   nfs_mount_root: "/mnt/nfs"
   container_workspace: "/workspace"
+  container_groups_prefix: "/workspace/groups"
   health:
     interval_sec: 2
     timeout_sec: 60

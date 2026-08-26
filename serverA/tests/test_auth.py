@@ -14,6 +14,8 @@ def test_login_success(client) -> None:
     assert body["nfs_host"] == "10.250.30.115"
     assert body["nfs_export_path"] == "/mnt/dockerContainer/nfs/alice"
     assert body["token"]
+    assert body["groups"]
+    assert body["groups"][0]["group_id"] == "team-alpha"
     assert body["obs_pub_endpoint"] is None
     assert body["tensorboard_endpoint"] is None
 
