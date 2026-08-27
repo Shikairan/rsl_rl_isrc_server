@@ -19,7 +19,7 @@
 | 3 | 把训练脚本拷进该文件夹的 `jobs/` | 不用调平台，就是拷文件 | 无（本机拷文件） | 例如本机能看见 `jobs/train.py` | 去启动环境 |
 | 4 | 点「启动训练环境」，GPU 数量填你要用的卡数 | `POST /containers/start` | **§2.3 启动环境** | **发命令的地址**、**看画面的地址**、**看 TensorBoard 的地址** | 可先连画面 / 打开 TB |
 | 5 | 点「连接画面」（建议先连再开训） | 用看画面的地址做 ZMQ 订阅 | **§4 看画面** | 窗口连上了；还没开训时是空的，正常 | 去开训 |
-| 6 | 点「开始训练」，脚本填 `jobs/train.py`（不要填本机绝对路径） | 对「发命令的地址」`POST /tasks/start` | **§2.5 开始训练** | 得到 `task_id`，日志开始刷，画面开始动 | 等它跑 |
+| 6 | 点「开始训练」，脚本填 `jobs/...`；并行环境数、训练轮次等填 `script_args` | 对「发命令的地址」`POST /tasks/start` | **§2.5 开始训练** | 得到 `task_id`，日志开始刷，画面开始动 | 等它跑 |
 | 7 | 看日志 / 画面；要停就点「停止训练」 | 问进度、拉日志见 §2.5 表；停训 `POST /tasks/{id}/stop` | **进度/日志 §2.5**；**停训 §2.6** | 停了之后环境还在，画面停在最后一帧，可以再开训 | 用完再关环境 |
 | 8 | 用完点「关闭环境」 | `POST /containers/stop` | **§2.4 关闭环境** | 两个地址作废 | 下次要训从第 4 步再来 |
 
@@ -37,6 +37,7 @@ POST 的 curl / Python / Qt 写法都在第 **2** 节：先看 **§2.1 样板**�
 
 - 网盘地址用 **登录返回的**，不要写死别人的路径。
 - 开训路径写成 `jobs/train.py`，不要写成 `/mnt/nfs/carol/jobs/train.py`。
+- 训练超参（并行环境数、迭代次数、epoch 等）写在 **`script_args`** 里，见 **§2.5**；不要留空数组除非脚本本身不需要参数。
 - 想看出画面，开训参数里不要带 `--no-zmq-obs`。
 - 日志要在训练还在跑时拉，跑完再拉是空的。
 - 「停止训练」只停这一轮；「关闭环境」才把训练环境拆掉。下次再训要重新走第 4 步。
@@ -341,20 +342,46 @@ postJson(nam, QUrl(kA + "/containers/stop"), QJsonObject{}, token);
 
 ### 2.5 开始训练（打「发命令的地址」，不要通行证）
 
+请求体三个字段分工如下：
+
+| 字段 | 传给谁 | 常见内容 |
+|------|--------|----------|
+| `script_path` | 训练脚本 | `jobs/train.py` 或 `jobs/g1_ddp4.py`（必须相对 `/workspace`） |
+| `torchrun_args` | `torchrun` | `["--nproc_per_node", "2", "--standalone"]`，数字与 GPU 数一致 |
+| `script_args` | **脚本自己的命令行参数** | 见下表；原样拼在脚本路径后面 |
+
+Server B 实际执行：
+
+```text
+torchrun <torchrun_args> /workspace/<script_path> <script_args...>
+```
+
+**`script_args` 怎么填（按脚本类型）**
+
+| 脚本 | 你想控制什么 | `script_args` 示例 |
+|------|----------------|-------------------|
+| `jobs/train.py`（冒烟） | 训练 epoch 数 | `["--epochs", "3"]` |
+| `jobs/g1_ddp4.py` 等 rsl_rl G1 | 并行仿真环境数（常叫 num-envs） | `["--num-envs", "8", ...]` |
+| 同上 | PPO 迭代轮数 | `["--max-iterations", "3", ...]` |
+| 同上 | 不要 ZMQ 画面（仅算力测试） | 末尾加 `"--no-zmq-obs"` |
+| 协作组脚本 | 路径要带组前缀 | `groups/team-alpha/jobs/...` 作 `script_path` |
+
+`--num-envs` 是仿真里并行 environment 数量，**不是** GPU 张数（GPU 用 `torchrun_args` 的 `--nproc_per_node`），也**不是** ZMQ 画面里最多 64 个机器人的那个上限。
+
+#### 示例 A：冒烟脚本 `jobs/train.py`
+
 ```json
 {
   "script_path": "jobs/train.py",
   "torchrun_args": ["--nproc_per_node", "2", "--standalone"],
-  "script_args": []
+  "script_args": ["--epochs", "3"]
 }
 ```
-
-`--nproc_per_node` 的数字要和第 4 步的 GPU 数量一致。同一时间只能跑一份训练。
 
 ```bash
 curl -sS -X POST "http://$EP/tasks/start" \
   -H 'content-type: application/json' \
-  -d '{"script_path":"jobs/train.py","torchrun_args":["--nproc_per_node","2","--standalone"],"script_args":[]}'
+  -d '{"script_path":"jobs/train.py","torchrun_args":["--nproc_per_node","2","--standalone"],"script_args":["--epochs","3"]}'
 ```
 
 ```python
@@ -363,7 +390,7 @@ code, task = post_json(
     {
         "script_path": "jobs/train.py",
         "torchrun_args": ["--nproc_per_node", "2", "--standalone"],
-        "script_args": [],
+        "script_args": ["--epochs", "3"],
     },
 )
 task_id = task["task_id"]
@@ -374,9 +401,59 @@ QNetworkReply *r = postJson(nam, QUrl(QString("http://%1/tasks/start").arg(ep)),
     QJsonObject{
         {"script_path", "jobs/train.py"},
         {"torchrun_args", QJsonArray{"--nproc_per_node", "2", "--standalone"}},
-        {"script_args", QJsonArray{}},
+        {"script_args", QJsonArray{"--epochs", "3"}},
     });
 ```
+
+#### 示例 B：rsl_rl_isrc G1（`jobs/g1_ddp4.py`）
+
+镜像 `rsl_rl_isrc:v3-D` 下，用 NFS 上的包装脚本；**并行环境数、迭代次数走 `script_args`**：
+
+```json
+{
+  "script_path": "jobs/g1_ddp4.py",
+  "torchrun_args": ["--nproc_per_node", "4", "--standalone"],
+  "script_args": ["--num-envs", "8", "--max-iterations", "3"]
+}
+```
+
+需要画面时 **不要** 加 `--no-zmq-obs`；只要算力、不要画面时可加：
+
+```json
+"script_args": ["--num-envs", "8", "--max-iterations", "3", "--no-zmq-obs"]
+```
+
+```python
+num_envs = 8
+max_iters = 3
+code, task = post_json(
+    f"http://{ep}/tasks/start",
+    {
+        "script_path": "jobs/g1_ddp4.py",
+        "torchrun_args": ["--nproc_per_node", "4", "--standalone"],
+        "script_args": [
+            "--num-envs", str(num_envs),
+            "--max-iterations", str(max_iters),
+        ],
+    },
+)
+```
+
+```cpp
+QNetworkReply *r = postJson(nam, QUrl(QString("http://%1/tasks/start").arg(ep)),
+    QJsonObject{
+        {"script_path", "jobs/g1_ddp4.py"},
+        {"torchrun_args", QJsonArray{"--nproc_per_node", "4", "--standalone"}},
+        {"script_args", QJsonArray{
+            "--num-envs", "8",
+            "--max-iterations", "3",
+        }},
+    });
+```
+
+Client UI 建议：把「并行环境数」「迭代次数」做成输入框，点「开始训练」时组装进 `script_args` 再 POST；`script_args` 始终是 **字符串数组**，形如 `["--flag", "值", "--flag2", "值2"]`。
+
+`--nproc_per_node` 的数字要和第 4 步的 GPU 数量一致。同一时间只能跑一份训练。
 
 文件找不到、路径写成了绝对路径 → 失败。已经有一份在跑 → 先停再开。
 
@@ -663,6 +740,7 @@ tensorboard --logdir /mnt/nfs/carol/logs/tensorboard --bind_all
 | 登录失败 | 账号密码；是不是打到了 `8017` 而不是别的端口 |
 | 网盘挂不上 | 没装 `nfs-common`；没用登录返回的路径；`showmount -e` 没有自己那条 |
 | 开训说找不到脚本 | 脚本没拷到网盘 `jobs/`；路径写成了本机绝对路径 |
+| 训练秒结束 / 只跑默认配置 | `script_args` 留空 `[]`；应按 §2.5 传入 `--epochs` 或 `--num-envs` / `--max-iterations` |
 | TensorBoard 打不开 / 是空的 | 镜像不是 `v3-D`、没 stop 再 start、防火墙没放行 33000–33999；或训练没往 `/workspace/logs/tensorboard` 写事件 |
 | 已经有一份在跑 | 先点停止训练 |
 | 有发命令的地址、画面地址是空的 | 关闭环境后再启动一次 |
